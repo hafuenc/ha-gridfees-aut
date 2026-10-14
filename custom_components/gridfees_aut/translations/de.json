@@ -1,0 +1,41 @@
+{
+  "title": "Gridfees AUT",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Österreichisches Tarifprofil",
+        "description": "Wähle Netzgebiet und Bezugsart. EEG-Tarife gelten ausschließlich für zugeteilte EEG-Energie; für Restbezug lege ein eigenes Profil mit regulärem Netzbezug an. Umfang: Netzebene 7, nicht gemessene Leistung, Eintarif. Diese Entwicklungsfassung erstellt noch keine Preissensoren.",
+        "data": {
+          "region": "Netzgebiet",
+          "supply_type": "Bezugsart"
+        }
+      },
+      "tariff": {
+        "title": "Tarifannahmen",
+        "description": "Bestätige die für deinen Bezug geltenden Voraussetzungen. Alle späteren Preiswerte werden netto in EUR/kWh berechnet.",
+        "data": {
+          "household": "Haushaltsregelung für die Elektrizitätsabgabe anwenden",
+          "snap_eligible": "SNAP-Berechtigung vorhanden",
+          "eeg_tax_exempt": "Elektrizitätsabgabe: EEG-Befreiung anwenden"
+        },
+        "data_description": {
+          "household": "Entspricht Household in der MATLAB-Funktion. Relevant, wenn Elektrizitätsabgabe anfällt.",
+          "snap_eligible": "Entspricht SNAPEligible: elektronisch gemessene Viertelstundenmengen werden vom Netzbetreiber ausgelesen.",
+          "eeg_tax_exempt": "Entspricht EEGTaxExempt. Nur die Elektrizitätsabgabe wird beeinflusst; die EEG-Netzermäßigung bleibt bestehen. Die Befreiung setzt qualifizierte erneuerbare EEG-Energie und erfüllte Voraussetzungen voraus."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Dieses Tarifprofil mit denselben Einstellungen ist bereits eingerichtet."
+    }
+  },
+  "selector": {
+    "supply_type": {
+      "options": {
+        "grid": "Regulärer Netzbezug",
+        "eeg_local": "Lokale EEG – zugeteilte Energie",
+        "eeg_regional": "Regionale EEG – zugeteilte Energie"
+      }
+    }
+  }
+}

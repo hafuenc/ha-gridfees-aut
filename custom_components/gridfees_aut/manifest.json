@@ -1,0 +1,12 @@
+{
+  "domain": "gridfees_aut",
+  "name": "Gridfees AUT",
+  "codeowners": ["@hafuenc"],
+  "config_flow": true,
+  "documentation": "https://github.com/hafuenc/ha-gridfees-aut",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/hafuenc/ha-gridfees-aut/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
