@@ -24,7 +24,7 @@ class ForecastTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.calculator = TariffCalculator.from_file(INTEGRATION / "tariffs.json")
 
-    def test_public_format_units_and_rolling_horizon(self) -> None:
+    def test_public_format_eur_per_kwh_only_and_rolling_horizon(self) -> None:
         snapshot = self.calculator.snapshot(
             vienna("2026-10-14T12:34:56"), TariffProfile("BGLD")
         )
@@ -35,8 +35,6 @@ class ForecastTests(unittest.TestCase):
             "start_time": "2026-10-14T12:00:00+02:00",
             "end_time": "2026-10-14T13:00:00+02:00",
             "price_eur_per_kwh": 0.0918,
-            "price_eur_per_mwh": 91.8,
-            "price_ct_per_kwh": 9.18,
         })
         self.assertEqual(rows[-1]["end_time"], "2026-10-21T12:00:00+02:00")
         self.assertEqual(attributes["forecast_timezone"], "Europe/Vienna")
@@ -130,8 +128,6 @@ class ForecastTests(unittest.TestCase):
         self.assertEqual(attributes["data"][0]["price_eur_per_kwh"], 0.0918)
         for row in attributes["data"][1:]:
             self.assertIsNone(row["price_eur_per_kwh"])
-            self.assertIsNone(row["price_eur_per_mwh"])
-            self.assertIsNone(row["price_ct_per_kwh"])
         json.dumps(attributes, allow_nan=False)
         unsupported = self.calculator.snapshot(
             vienna("2027-01-01T00:00"), TariffProfile("BGLD")

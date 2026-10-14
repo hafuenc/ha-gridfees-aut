@@ -5,7 +5,7 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.4.0
+## Status: 0.4.1
 
 Configure a grid area, supply type, and applicable tax and SNAP settings. Multiple
 different profiles can be configured; identical profiles are rejected. To change a
@@ -111,8 +111,6 @@ data:
   - start_time: '2026-10-14T12:00:00+02:00'
     end_time: '2026-10-14T13:00:00+02:00'
     price_eur_per_kwh: 0.0918
-    price_eur_per_mwh: 91.8
-    price_ct_per_kwh: 9.18
 ```
 
 This example uses a regular Burgenland household profile. All values are net
@@ -123,7 +121,7 @@ tariff schedule rather than estimated market prices.
 Additional attributes identify `forecast_start`, `forecast_end`, `forecast_hours`,
 `forecast_interval_minutes`, `forecast_timezone`, `tariff_timezone`, and
 `forecast_complete`. If any forecast hour falls outside supported tariff dates,
-all three price fields for that row are `null` and `forecast_complete` is `false`.
+the `price_eur_per_kwh` field for that row is `null` and `forecast_complete` is `false`.
 The window still contains 168 intervals. Missing rates are never replaced by zero
 or carried forward from another year.
 
@@ -236,7 +234,7 @@ explicit reference prices, tariff and tax boundaries, SNAP, EEG, rounding,
 Kleinwalsertal, timezone conversion, unsupported years, invalid inputs, standard
 non-exempt EEG profiles, and generated profile names.
 
-Forecast tests also cover the requested attribute format, price unit conversion,
+Forecast tests also cover the requested EUR/kWh-only attribute format,
 hourly rolling updates when the current price does not change, 168-hour windows
 across both daylight saving changes, different display timezones, and unsupported
 future rates. The calculation engine additionally supports custom interval-start

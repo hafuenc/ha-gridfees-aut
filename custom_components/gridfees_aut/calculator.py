@@ -64,13 +64,11 @@ class PriceInterval:
     price: Decimal | None
 
     def as_dict(self) -> dict[str, str | float | None]:
-        """Expose the requested price units as JSON-compatible numbers."""
+        """Expose the net price in EUR/kWh as a JSON-compatible number."""
         return {
             "start_time": self.start_time,
             "end_time": self.end_time,
             "price_eur_per_kwh": None if self.price is None else float(self.price),
-            "price_eur_per_mwh": None if self.price is None else float(self.price * 1000),
-            "price_ct_per_kwh": None if self.price is None else float(self.price * 100),
         }
 
 
