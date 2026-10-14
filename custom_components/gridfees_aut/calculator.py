@@ -1,7 +1,7 @@
 """Time-dependent grid fees with decimal arithmetic and Vienna calendar rules."""
 
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone, tzinfo
 from decimal import Decimal, ROUND_HALF_UP
 import json
 from pathlib import Path
@@ -53,6 +53,47 @@ class PriceBreakdown:
             + self.renewable_support_usage
             + self.renewable_support_loss
         )
+
+
+@dataclass(frozen=True)
+class PriceInterval:
+    """A forecast interval with one net unit price, or no supported price."""
+
+    start_time: str
+    end_time: str
+    price: Decimal | None
+
+    def as_dict(self) -> dict[str, str | float | None]:
+        """Expose the requested price units as JSON-compatible numbers."""
+        return {
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "price_eur_per_kwh": None if self.price is None else float(self.price),
+            "price_eur_per_mwh": None if self.price is None else float(self.price * 1000),
+            "price_ct_per_kwh": None if self.price is None else float(self.price * 100),
+        }
+
+
+@dataclass(frozen=True)
+class TariffSnapshot:
+    """Current fees and a rolling 168-hour forecast from the same profile."""
+
+    current: PriceBreakdown | None
+    forecast: tuple[PriceInterval, ...]
+    forecast_timezone: str
+
+    def forecast_attributes(self) -> dict[str, Any]:
+        """Build live sensor attributes without including changing timestamps."""
+        return {
+            "data": [interval.as_dict() for interval in self.forecast],
+            "forecast_start": self.forecast[0].start_time,
+            "forecast_end": self.forecast[-1].end_time,
+            "forecast_hours": 168,
+            "forecast_interval_minutes": 60,
+            "forecast_timezone": self.forecast_timezone,
+            "tariff_timezone": "Europe/Vienna",
+            "forecast_complete": all(interval.price is not None for interval in self.forecast),
+        }
 
 
 def _in_vienna(moment: datetime) -> datetime:
@@ -166,3 +207,30 @@ class TariffCalculator:
         while current < stop:
             yield current.astimezone(VIENNA), self.calculate(current, profile)
             current += step
+
+    def snapshot(
+        self,
+        moment: datetime,
+        profile: TariffProfile,
+        display_timezone: tzinfo = VIENNA,
+    ) -> TariffSnapshot:
+        """Calculate now and the current UTC hour plus the next 167 hours."""
+        instant = _in_vienna(moment).astimezone(timezone.utc)
+        start = instant.replace(minute=0, second=0, microsecond=0)
+        hour = timedelta(hours=1)
+        intervals = []
+        for index in range(168):
+            interval_start = start + index * hour
+            price = self.calculate(interval_start, profile)
+            intervals.append(
+                PriceInterval(
+                    start_time=interval_start.astimezone(display_timezone).isoformat(),
+                    end_time=(interval_start + hour).astimezone(display_timezone).isoformat(),
+                    price=None if price is None else price.total,
+                )
+            )
+        return TariffSnapshot(
+            current=self.calculate(instant, profile),
+            forecast=tuple(intervals),
+            forecast_timezone=str(display_timezone),
+        )

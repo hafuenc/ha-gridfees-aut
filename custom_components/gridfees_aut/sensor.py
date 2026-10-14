@@ -1,6 +1,7 @@
 """Net price sensors for Austrian variable grid fees and levies."""
 
 from decimal import Decimal
+from typing import Any
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -37,6 +38,19 @@ async def async_setup_entry(
 class GridfeesPriceSensor(GridfeesEntity, SensorEntity):
     """A unit price, rather than an accumulated monetary amount."""
 
+    _unrecorded_attributes = frozenset(
+        {
+            "data",
+            "forecast_start",
+            "forecast_end",
+            "forecast_hours",
+            "forecast_interval_minutes",
+            "forecast_timezone",
+            "forecast_complete",
+            "tariff_timezone",
+        }
+    )
+
     def __init__(self, coordinator: GridfeesCoordinator, key: str) -> None:
         """Use measurement statistics and preserve the full underlying precision."""
         super().__init__(coordinator, key)
@@ -53,6 +67,14 @@ class GridfeesPriceSensor(GridfeesEntity, SensorEntity):
     @property
     def native_value(self) -> Decimal | None:
         """Return the cached fee component or the combined total."""
-        if self.coordinator.data is None:
+        if self.coordinator.data is None or self.coordinator.data.current is None:
             return None
-        return getattr(self.coordinator.data, self.entity_description.key)
+        return getattr(self.coordinator.data.current, self.entity_description.key)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Expose a seven-day forecast only on Total grid fees."""
+        attributes = dict(self._attr_extra_state_attributes)
+        if self.entity_description.key == "total" and self.coordinator.data is not None:
+            attributes.update(self.coordinator.data.forecast_attributes())
+        return attributes

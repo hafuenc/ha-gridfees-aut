@@ -5,7 +5,7 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.3.0
+## Status: 0.4.0
 
 Configure a grid area, supply type, and applicable tax and SNAP settings. Multiple
 different profiles can be configured; identical profiles are rejected. To change a
@@ -46,8 +46,12 @@ accumulated costs. The total is the sum of the five fee and levy components.
 
 - The household switch selects the applicable household rate for
   **Elektrizitätsabgabe**. It does **not** indicate exemption.
-- **EEG exemption from Elektrizitätsabgabe is off by default.** Enable it only when
-  its conditions are met. Without it, the applicable Elektrizitätsabgabe is charged.
+- **Do not charge Elektrizitätsabgabe on EEG energy** is off by default.
+  **Off means the tax is charged; on means the EEG tax component is zero.**
+  Enable it only when the exemption conditions are met. This switch is shown only
+  for allocated EEG energy, not for regular grid supply.
+- Example for a supported 2026 household EEG profile outside Kleinwalsertal:
+  off gives **0.001 EUR/kWh Elektrizitätsabgabe**, on gives **0 EUR/kWh**.
 - This exemption is separate from the EEG reduction of Netznutzungsentgelt and
   the EEG exemption from Erneuerbaren-Förderbeitrag.
 - Kleinwalsertal is treated separately for Elektrizitätsabgabe.
@@ -64,12 +68,14 @@ setting applies to newly created profiles.
 - Regular grid supply and allocated local or regional EEG energy.
 - Supported dates: **January 1, 2022 through December 31, 2026**.
 - Tariff boundaries evaluated in `Europe/Vienna`, independently of the system's
-  configured timezone.
+  configured timezone. Forecast timestamps use the configured Home Assistant
+  timezone; see below.
 
 Prices are calculated when a profile loads and refreshed at each UTC hour
 boundary. This covers Vienna midnight, seasonal tariff changes, and the 10:00 and
 16:00 SNAP boundaries. Unchanged snapshots do not trigger unnecessary entity
-updates. The refresh timer is removed when a profile unloads.
+updates within the same hour. The forecast advances hourly even when the current
+unit price stays constant. The refresh timer is removed when a profile unloads.
 
 SNAP (Sommer-Nieder-Arbeitspreis) applies to eligible regular grid supply during
 the configured 2026 summer window. Published reduced Netznutzungsentgelt rates
@@ -89,6 +95,64 @@ the regular model.
 **No extrapolation:** all price sensors and SNAP status become unavailable outside
 the supported date range. Updated tariff data must be supplied in a new integration
 version before 2027. The `tariff_valid_until` attribute is an exclusive boundary.
+
+## Seven-day forecast on Total grid fees
+
+The **Total grid fees** sensor exposes its forecast in the `data` attribute.
+It contains **168 one-hour intervals**, starting at the beginning of the current
+UTC hour and extending to that hour plus 168 hours. The first row therefore
+includes the currently running hour. The window advances on each hourly refresh.
+This is a rolling seven-times-24-hour horizon, not seven local calendar dates.
+
+Each row follows this format:
+
+```yaml
+data:
+  - start_time: '2026-10-14T12:00:00+02:00'
+    end_time: '2026-10-14T13:00:00+02:00'
+    price_eur_per_kwh: 0.0918
+    price_eur_per_mwh: 91.8
+    price_ct_per_kwh: 9.18
+```
+
+This example uses a regular Burgenland household profile. All values are net
+**grid fees and levies**, not exchange energy prices. Forecasts use the selected
+profile's SNAP, EEG, and tax assumptions. They are calculated from the supported
+tariff schedule rather than estimated market prices.
+
+Additional attributes identify `forecast_start`, `forecast_end`, `forecast_hours`,
+`forecast_interval_minutes`, `forecast_timezone`, `tariff_timezone`, and
+`forecast_complete`. If any forecast hour falls outside supported tariff dates,
+all three price fields for that row are `null` and `forecast_complete` is `false`.
+The window still contains 168 intervals. Missing rates are never replaced by zero
+or carried forward from another year.
+
+Only Total grid fees carries the forecast. It is available to dashboard cards,
+templates, and automations through the live `data` attribute. The forecast table
+and its metadata are excluded from Recorder history to avoid storing a large
+rolling table every hour. The sensor's current price and its measurement
+statistics remain recordable according to your Recorder configuration. Historical
+forecast tables are therefore not available through the history API.
+
+### Clock and timezone
+
+The integration already reads Home Assistant's current system clock as an aware
+UTC instant. The PC used to configure the integration does not supply its clock.
+
+**Tariff calculation always uses Europe/Vienna.** A 10:00 SNAP boundary means
+10:00 in Austria. Substituting another system timezone for tariff rules would
+shift the applicable price, so that is not used as a calculation setting.
+
+**Forecast timestamps use Home Assistant's configured timezone** from
+**Settings → System → General**. If it is Europe/Vienna, the timestamps use the
+correct +01:00/+02:00 offset. If it is UTC or another timezone, the same instants
+are displayed in that timezone with unchanged prices. Timezone changes take
+effect on the next refresh or integration reload.
+
+The intervals advance in UTC to avoid duplicate or missing physical hours at
+clock changes. In autumn, the repeated local hour has different UTC offsets;
+in spring, the missing local hour is skipped. The rolling horizon always contains
+168 actual hours, including weeks with a daylight saving change.
 
 ## Installation and verification
 
@@ -113,9 +177,13 @@ Studio Code Server to transfer them.
 The integration icon is packaged in `brand/icon.png`. Home Assistant 2026.3 or
 newer supports these local brand images. No extra image configuration is needed.
 
-### Updating from 0.2.x
+### Updating from an earlier version
 
 Replace the integration files, including subfolders, and restart Home Assistant.
+Version 0.4.0 adds the forecast automatically to existing Total grid fees sensors;
+no profile recreation is needed for the forecast. Verify `data` under
+**Developer tools → States** after updating.
+
 Existing profiles receive the new official component names and generated device
 names. Generated profile titles from older versions are updated; custom titles
 and user-assigned device names are preserved. Entity unique IDs and existing
@@ -168,10 +236,11 @@ explicit reference prices, tariff and tax boundaries, SNAP, EEG, rounding,
 Kleinwalsertal, timezone conversion, unsupported years, invalid inputs, standard
 non-exempt EEG profiles, and generated profile names.
 
-The calculation engine also provides interval-start time series over a chosen
-range. It steps in UTC, producing 92, 96, or 100 quarter-hour values per Vienna
-day as appropriate. A Home Assistant action for requesting these series is not
-yet exposed; the entities currently show the price applicable now.
+Forecast tests also cover the requested attribute format, price unit conversion,
+hourly rolling updates when the current price does not change, 168-hour windows
+across both daylight saving changes, different display timezones, and unsupported
+future rates. The calculation engine additionally supports custom interval-start
+time series; a separate Home Assistant action for arbitrary ranges is not exposed.
 
 Python syntax, JSON files, and interface text are checked locally. Runtime
 verification of this version's entity setup and reload in Home Assistant remains

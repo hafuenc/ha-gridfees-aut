@@ -34,4 +34,8 @@ class GridfeesEntity(CoordinatorEntity[GridfeesCoordinator]):
     @property
     def available(self) -> bool:
         """Avoid reporting zero or a stale price outside supported tariff dates."""
-        return super().available and self.coordinator.data is not None
+        return (
+            super().available
+            and self.coordinator.data is not None
+            and self.coordinator.data.current is not None
+        )

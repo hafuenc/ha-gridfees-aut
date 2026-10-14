@@ -34,6 +34,6 @@ class GridfeesSnapSensor(GridfeesEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool | None:
         """Read status from the same snapshot as the price sensors."""
-        if self.coordinator.data is None:
+        if self.coordinator.data is None or self.coordinator.data.current is None:
             return None
-        return self.coordinator.data.snap_active
+        return self.coordinator.data.current.snap_active

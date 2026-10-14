@@ -9,13 +9,13 @@ from homeassistant.helpers.event import async_track_utc_time_change
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
-from .calculator import PriceBreakdown, TariffCalculator, TariffProfile
+from .calculator import TariffCalculator, TariffProfile, TariffSnapshot
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class GridfeesCoordinator(DataUpdateCoordinator[PriceBreakdown | None]):
+class GridfeesCoordinator(DataUpdateCoordinator[TariffSnapshot]):
     """Share one calculation across all entities in a tariff profile."""
 
     def __init__(
@@ -29,9 +29,11 @@ class GridfeesCoordinator(DataUpdateCoordinator[PriceBreakdown | None]):
         self.calculator = calculator
         self.profile = TariffProfile(**entry.data)
 
-    async def _async_update_data(self) -> PriceBreakdown | None:
-        """Calculate now; unsupported dates deliberately produce unavailable entities."""
-        return self.calculator.calculate(dt_util.utcnow(), self.profile)
+    async def _async_update_data(self) -> TariffSnapshot:
+        """Refresh current fees and forecast using HA's configured display timezone."""
+        return self.calculator.snapshot(
+            dt_util.utcnow(), self.profile, dt_util.get_default_time_zone()
+        )
 
     @callback
     def async_start(self) -> None:
