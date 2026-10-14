@@ -1,0 +1,440 @@
+{
+  "valid_from": "2022-01-01",
+  "valid_until": "2027-01-01",
+  "grid_tariffs": [
+    {
+      "valid_from": "2022-01-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "5.48",
+          "grid_loss_ct": "0.357"
+        },
+        "KTN": {
+          "grid_usage_ct": "7.03",
+          "grid_loss_ct": "0.458"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "4.67",
+          "grid_loss_ct": "0.357"
+        },
+        "NOE": {
+          "grid_usage_ct": "4.82",
+          "grid_loss_ct": "0.309"
+        },
+        "OOE": {
+          "grid_usage_ct": "5.0",
+          "grid_loss_ct": "0.355"
+        },
+        "LINZ": {
+          "grid_usage_ct": "3.46",
+          "grid_loss_ct": "0.314"
+        },
+        "SBG": {
+          "grid_usage_ct": "4.38",
+          "grid_loss_ct": "0.255"
+        },
+        "STMK": {
+          "grid_usage_ct": "5.66",
+          "grid_loss_ct": "0.369"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "4.41",
+          "grid_loss_ct": "0.449"
+        },
+        "TIROL": {
+          "grid_usage_ct": "4.33",
+          "grid_loss_ct": "0.367"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "5.24",
+          "grid_loss_ct": "0.384"
+        },
+        "VBG": {
+          "grid_usage_ct": "3.57",
+          "grid_loss_ct": "0.352"
+        },
+        "WIEN": {
+          "grid_usage_ct": "4.28",
+          "grid_loss_ct": "0.464"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "10.92",
+          "grid_loss_ct": "0.342"
+        }
+      }
+    },
+    {
+      "valid_from": "2023-01-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "5.83",
+          "grid_loss_ct": "2.474"
+        },
+        "KTN": {
+          "grid_usage_ct": "7.03",
+          "grid_loss_ct": "2.519"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "4.89",
+          "grid_loss_ct": "2.303"
+        },
+        "NOE": {
+          "grid_usage_ct": "5.37",
+          "grid_loss_ct": "2.225"
+        },
+        "OOE": {
+          "grid_usage_ct": "5.12",
+          "grid_loss_ct": "2.521"
+        },
+        "LINZ": {
+          "grid_usage_ct": "3.8",
+          "grid_loss_ct": "1.736"
+        },
+        "SBG": {
+          "grid_usage_ct": "5.29",
+          "grid_loss_ct": "1.724"
+        },
+        "STMK": {
+          "grid_usage_ct": "6.13",
+          "grid_loss_ct": "2.328"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "5.03",
+          "grid_loss_ct": "2.851"
+        },
+        "TIROL": {
+          "grid_usage_ct": "5.02",
+          "grid_loss_ct": "2.69"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "6.04",
+          "grid_loss_ct": "2.584"
+        },
+        "VBG": {
+          "grid_usage_ct": "3.68",
+          "grid_loss_ct": "2.08"
+        },
+        "WIEN": {
+          "grid_usage_ct": "5.0",
+          "grid_loss_ct": "2.914"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "11.86",
+          "grid_loss_ct": "1.932"
+        }
+      }
+    },
+    {
+      "valid_from": "2023-03-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "5.83",
+          "grid_loss_ct": "0.269"
+        },
+        "KTN": {
+          "grid_usage_ct": "7.03",
+          "grid_loss_ct": "0.398"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "4.89",
+          "grid_loss_ct": "0.52"
+        },
+        "NOE": {
+          "grid_usage_ct": "5.37",
+          "grid_loss_ct": "0.329"
+        },
+        "OOE": {
+          "grid_usage_ct": "5.12",
+          "grid_loss_ct": "0.594"
+        },
+        "LINZ": {
+          "grid_usage_ct": "3.8",
+          "grid_loss_ct": "0.38"
+        },
+        "SBG": {
+          "grid_usage_ct": "5.29",
+          "grid_loss_ct": "0.186"
+        },
+        "STMK": {
+          "grid_usage_ct": "6.13",
+          "grid_loss_ct": "0.387"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "5.03",
+          "grid_loss_ct": "0.766"
+        },
+        "TIROL": {
+          "grid_usage_ct": "5.02",
+          "grid_loss_ct": "0.604"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "6.04",
+          "grid_loss_ct": "0.642"
+        },
+        "VBG": {
+          "grid_usage_ct": "3.68",
+          "grid_loss_ct": "0.616"
+        },
+        "WIEN": {
+          "grid_usage_ct": "5.0",
+          "grid_loss_ct": "0.593"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "11.86",
+          "grid_loss_ct": "0.64"
+        }
+      }
+    },
+    {
+      "valid_from": "2024-01-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "5.74",
+          "grid_loss_ct": "0.209"
+        },
+        "KTN": {
+          "grid_usage_ct": "8.08",
+          "grid_loss_ct": "1.154"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "5.61",
+          "grid_loss_ct": "1.002"
+        },
+        "NOE": {
+          "grid_usage_ct": "5.77",
+          "grid_loss_ct": "0.783"
+        },
+        "OOE": {
+          "grid_usage_ct": "4.66",
+          "grid_loss_ct": "0.796"
+        },
+        "LINZ": {
+          "grid_usage_ct": "4.43",
+          "grid_loss_ct": "0.483"
+        },
+        "SBG": {
+          "grid_usage_ct": "6.38",
+          "grid_loss_ct": "0.808"
+        },
+        "STMK": {
+          "grid_usage_ct": "6.64",
+          "grid_loss_ct": "0.793"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "5.73",
+          "grid_loss_ct": "1.108"
+        },
+        "TIROL": {
+          "grid_usage_ct": "5.25",
+          "grid_loss_ct": "0.963"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "7.55",
+          "grid_loss_ct": "1.003"
+        },
+        "VBG": {
+          "grid_usage_ct": "4.71",
+          "grid_loss_ct": "0.707"
+        },
+        "WIEN": {
+          "grid_usage_ct": "5.3",
+          "grid_loss_ct": "0.866"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "16.01",
+          "grid_loss_ct": "0.861"
+        }
+      }
+    },
+    {
+      "valid_from": "2025-01-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "7.26",
+          "grid_loss_ct": "0.0"
+        },
+        "KTN": {
+          "grid_usage_ct": "9.76",
+          "grid_loss_ct": "0.647"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "7.25",
+          "grid_loss_ct": "0.771"
+        },
+        "NOE": {
+          "grid_usage_ct": "8.2",
+          "grid_loss_ct": "0.452"
+        },
+        "OOE": {
+          "grid_usage_ct": "6.23",
+          "grid_loss_ct": "0.554"
+        },
+        "LINZ": {
+          "grid_usage_ct": "5.28",
+          "grid_loss_ct": "0.416"
+        },
+        "SBG": {
+          "grid_usage_ct": "7.47",
+          "grid_loss_ct": "0.503"
+        },
+        "STMK": {
+          "grid_usage_ct": "9.13",
+          "grid_loss_ct": "0.444"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "5.4",
+          "grid_loss_ct": "0.743"
+        },
+        "TIROL": {
+          "grid_usage_ct": "5.99",
+          "grid_loss_ct": "0.472"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "7.81",
+          "grid_loss_ct": "0.676"
+        },
+        "VBG": {
+          "grid_usage_ct": "5.4",
+          "grid_loss_ct": "0.485"
+        },
+        "WIEN": {
+          "grid_usage_ct": "7.4",
+          "grid_loss_ct": "0.7"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "20.01",
+          "grid_loss_ct": "0.53"
+        }
+      }
+    },
+    {
+      "valid_from": "2026-01-01",
+      "regions": {
+        "BGLD": {
+          "grid_usage_ct": "8.46",
+          "grid_loss_ct": "0.0",
+          "snap_usage_ct": "6.77"
+        },
+        "KTN": {
+          "grid_usage_ct": "9.67",
+          "grid_loss_ct": "0.368",
+          "snap_usage_ct": "7.74"
+        },
+        "KLAGENFURT": {
+          "grid_usage_ct": "6.9",
+          "grid_loss_ct": "0.578",
+          "snap_usage_ct": "5.52"
+        },
+        "NOE": {
+          "grid_usage_ct": "8.79",
+          "grid_loss_ct": "0.384",
+          "snap_usage_ct": "7.03"
+        },
+        "OOE": {
+          "grid_usage_ct": "6.29",
+          "grid_loss_ct": "0.528",
+          "snap_usage_ct": "5.03"
+        },
+        "LINZ": {
+          "grid_usage_ct": "5.57",
+          "grid_loss_ct": "0.487",
+          "snap_usage_ct": "4.46"
+        },
+        "SBG": {
+          "grid_usage_ct": "6.59",
+          "grid_loss_ct": "0.357",
+          "snap_usage_ct": "5.27"
+        },
+        "STMK": {
+          "grid_usage_ct": "8.82",
+          "grid_loss_ct": "0.336",
+          "snap_usage_ct": "7.06"
+        },
+        "GRAZ": {
+          "grid_usage_ct": "5.17",
+          "grid_loss_ct": "0.658",
+          "snap_usage_ct": "4.14"
+        },
+        "TIROL": {
+          "grid_usage_ct": "6.81",
+          "grid_loss_ct": "0.293",
+          "snap_usage_ct": "5.45"
+        },
+        "INNSBRUCK": {
+          "grid_usage_ct": "8.03",
+          "grid_loss_ct": "0.453",
+          "snap_usage_ct": "6.42"
+        },
+        "VBG": {
+          "grid_usage_ct": "4.96",
+          "grid_loss_ct": "0.393",
+          "snap_usage_ct": "3.97"
+        },
+        "WIEN": {
+          "grid_usage_ct": "6.98",
+          "grid_loss_ct": "0.7",
+          "snap_usage_ct": "5.58"
+        },
+        "KLEINWALSERTAL": {
+          "grid_usage_ct": "17.73",
+          "grid_loss_ct": "0.401",
+          "snap_usage_ct": "14.18"
+        }
+      }
+    }
+  ],
+  "electricity_tax": [
+    {
+      "valid_from": "2022-01-01",
+      "household": "0.015",
+      "other": "0.015"
+    },
+    {
+      "valid_from": "2022-05-01",
+      "household": "0.001",
+      "other": "0.001"
+    },
+    {
+      "valid_from": "2025-01-01",
+      "household": "0.015",
+      "other": "0.015"
+    },
+    {
+      "valid_from": "2026-01-01",
+      "household": "0.001",
+      "other": "0.0082"
+    }
+  ],
+  "renewable_support": [
+    {
+      "valid_from": "2022-01-01",
+      "grid_usage": "0",
+      "grid_loss": "0"
+    },
+    {
+      "valid_from": "2025-01-01",
+      "grid_usage": "0.00737",
+      "grid_loss": "0.00059"
+    },
+    {
+      "valid_from": "2026-01-01",
+      "grid_usage": "0.00583",
+      "grid_loss": "0.00037"
+    }
+  ],
+  "eeg_usage_factors": {
+    "eeg_local": "0.43",
+    "eeg_regional": "0.72"
+  },
+  "electricity_tax_exempt_regions": [
+    "KLEINWALSERTAL"
+  ],
+  "snap_windows": [
+    {
+      "valid_from": "2026-04-01",
+      "valid_until": "2026-10-01",
+      "start_hour": 10,
+      "end_hour": 16
+    }
+  ]
+}

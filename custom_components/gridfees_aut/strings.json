@@ -37,5 +37,32 @@
         "eeg_regional": "Regional EEG – allocated energy"
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "total": {
+        "name": "Total grid fees and levies"
+      },
+      "grid_usage": {
+        "name": "Grid usage fee"
+      },
+      "grid_loss": {
+        "name": "Grid loss fee"
+      },
+      "electricity_tax": {
+        "name": "Electricity tax"
+      },
+      "renewable_support_usage": {
+        "name": "Renewable support contribution (grid usage)"
+      },
+      "renewable_support_loss": {
+        "name": "Renewable support contribution (grid loss)"
+      }
+    },
+    "binary_sensor": {
+      "snap_active": {
+        "name": "SNAP active"
+      }
+    }
   }
 }
