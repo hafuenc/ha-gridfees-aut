@@ -5,7 +5,7 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.5.0
+## Status: 0.5.1
 
 Configure a grid area and supply type. Regular grid supply profiles additionally
 ask for the household load-profile rate and SNAP eligibility. Local and regional
@@ -191,6 +191,11 @@ newer supports these local brand images. No extra image configuration is needed.
 ### Updating from an earlier version
 
 Replace the integration files, including subfolders, and restart Home Assistant.
+Version 0.5.1 changes the integration type to `entity`, so profiles appear under
+**Integration entries** instead of **Services** in the English Home Assistant
+interface. Existing profiles and entity IDs are preserved. For this update alone,
+replace `manifest.json`, restart Home Assistant, and refresh the browser page.
+
 Version 0.4.0 adds the forecast automatically to existing Total grid fees sensors;
 no profile recreation is needed for the forecast. Verify `data` under
 **Developer tools → States** after updating.

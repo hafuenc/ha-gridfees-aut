@@ -6,9 +6,9 @@
   ],
   "config_flow": true,
   "documentation": "https://github.com/hafuenc/ha-gridfees-aut",
-  "integration_type": "service",
+  "integration_type": "entity",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/hafuenc/ha-gridfees-aut/issues",
   "requirements": [],
-  "version": "0.5.0"
+  "version": "0.5.1"
 }
