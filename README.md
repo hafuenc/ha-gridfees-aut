@@ -165,6 +165,35 @@ in spring, the missing local hour is skipped. The rolling horizon always contain
 
 ## Installation and verification
 
+### HACS (recommended)
+
+Requires Home Assistant **2026.3 or newer** and a configured HACS installation.
+This repository is added as a **custom repository**; it is not yet included in
+the HACS default catalog.
+
+1. Open **HACS → ⋮ → Custom repositories**.
+2. Enter `https://github.com/hafuenc/ha-gridfees-aut`, select **Integration**,
+   and click **Add**.
+3. Find **Gridfees AUT** in HACS, open it, and select **Download**. Choose the
+   latest released version.
+4. Restart Home Assistant.
+5. Open **Settings → Devices & services → Add integration → Gridfees AUT**
+   and configure a tariff profile.
+
+For future versions, use the update offered by HACS and restart Home Assistant.
+HACS manages the integration files; tariff profile settings remain in Home Assistant.
+
+#### Moving an existing manual installation to HACS
+
+Keep your configured Gridfees AUT profiles and the existing
+`/config/custom_components/gridfees_aut` folder. Add the custom repository and
+download the release through HACS as above, then restart Home Assistant.
+HACS replaces the integration files in the same folder. Existing settings,
+entity IDs, and history are preserved; no new tariff profile is needed.
+Any personal edits to the integration files will be replaced by the release.
+
+### Manual installation
+
 1. Copy the entire `custom_components/gridfees_aut` folder into the Home Assistant
    configuration directory. The resulting path must be
    `<config>/custom_components/gridfees_aut/manifest.json`.
@@ -218,8 +247,8 @@ The current total and its seven-day forecast are recalculated. Regular grid supp
 keeps its saved household and SNAP choices. Profile recreation is not required,
 and existing entity IDs and historical records remain unchanged.
 
-The repository includes initial HACS metadata. HACS distribution requires a
-public repository; this project is not currently listed in the HACS default catalog.
+HACS distribution requires a public repository and a published GitHub release.
+See [Release preparation](docs/releasing.md) for the maintainer workflow.
 
 ## Legal sources and tariff data
 
@@ -263,9 +292,9 @@ across both daylight saving changes, different display timezones, and unsupporte
 future rates. The calculation engine additionally supports custom interval-start
 time series; a separate Home Assistant action for arbitrary ranges is not exposed.
 
-Python syntax, JSON files, and interface text are checked locally. Runtime
-verification of this version's entity setup and reload in Home Assistant remains
-pending.
+The calculation tests, HACS validation, and Home Assistant hassfest checks run
+on GitHub for pushes and pull requests. Version 0.5.2 was also checked in Home
+Assistant: it appears in Add integration and opens the tariff setup dialog.
 
 References: [Config flow](https://developers.home-assistant.io/docs/core/integration/config_flow/),
 [Sensor entities](https://developers.home-assistant.io/docs/core/entity/sensor/),
