@@ -60,9 +60,16 @@ under [§ 4 Abs. 1 Stromkostenzuschussgesetz (SKZG)](https://www.ris.bka.gv.at/e
 lists the eligible standard load profiles H0, HA, and HF. These eligibility criteria
 are selected by the user, not checked by the integration.
 
-The household rate is not a tax exemption. The EEG exemption must be enabled
-explicitly when its conditions are met; it is off by default for new profiles.
-Existing saved assumptions are retained during upgrades.
+The household rate is not a tax exemption and is selected only for regular grid
+supply. Local and regional EEG profiles automatically apply § 2 Abs. 1 Z 4 ElAbgG
+to allocated, qualifying renewable energy consumed within the community. There
+is no exemption switch. The model assumes fulfilled allocation, evidence, and
+procedural requirements; before July 2022, qualifying photovoltaic generation is
+assumed for historical EEG calculations. Residual supplier energy uses a separate
+regular grid supply profile and does not inherit the EEG exemption.
+
+On upgrade to 0.5.0, retired EEG exemption choices are removed. Regular grid
+supply retains its household and SNAP choices.
 
 ## Erneuerbaren-Ausbau-Gesetz (EAG)
 

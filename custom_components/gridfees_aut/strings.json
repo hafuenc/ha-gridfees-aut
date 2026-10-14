@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Austrian tariff profile",
-        "description": "Select the grid area and supply type. EEG (Erneuerbare-Energie-Gemeinschaft) tariffs apply only to allocated community energy; create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff.",
+        "description": "Select the grid area and supply type. EEG (Erneuerbare-Energie-Gemeinschaft) tariffs apply only to allocated community energy, with Elektrizitätsabgabe automatically set to zero. Create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff.",
         "data": {
           "region": "Grid area",
           "supply_type": "Supply type"
@@ -15,13 +15,11 @@
         "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT.",
         "data": {
           "household": "Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil",
-          "snap_eligible": "Eligible for SNAP",
-          "eeg_tax_exempt": "Do not charge Elektrizitätsabgabe on EEG energy"
+          "snap_eligible": "Eligible for SNAP"
         },
         "data_description": {
           "household": "Der Entnahmezählpunkt hat eines der begünstigten Lastprofile H0, HA oder HF. Für 2026 verweist [§ 7 Abs. 16 ElAbgG](https://ris.bka.gv.at/eli/bgbl/1996/201/P7/NOR40273847) auf den berechtigten Personenkreis nach [§ 4 Abs. 1 Stromkostenzuschussgesetz](https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760). Ein: ermäßigter Satz; aus: Satz für sonstige Lieferungen.",
-          "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator.",
-          "eeg_tax_exempt": "Off (default): charge Elektrizitätsabgabe at the selected rate. On: set Elektrizitätsabgabe to zero for allocated EEG energy. Enable only if the exemption requirements are met. This is independent of the EEG reduction of Netznutzungsentgelt and exemption from Erneuerbaren-Förderbeitrag."
+          "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator."
         }
       }
     },

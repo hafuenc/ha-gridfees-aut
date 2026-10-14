@@ -27,7 +27,7 @@ class GridfeesCoordinator(DataUpdateCoordinator[TariffSnapshot]):
         )
         self.entry = entry
         self.calculator = calculator
-        self.profile = TariffProfile(**entry.data)
+        self.profile = TariffProfile.from_config(entry.data)
 
     async def _async_update_data(self) -> TariffSnapshot:
         """Refresh current fees and forecast using HA's configured display timezone."""

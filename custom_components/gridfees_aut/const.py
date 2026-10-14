@@ -6,7 +6,6 @@ CONF_REGION = "region"
 CONF_SUPPLY_TYPE = "supply_type"
 CONF_HOUSEHOLD = "household"
 CONF_SNAP_ELIGIBLE = "snap_eligible"
-CONF_EEG_TAX_EXEMPT = "eeg_tax_exempt"
 
 SUPPLY_GRID = "grid"
 SUPPLY_EEG_LOCAL = "eeg_local"

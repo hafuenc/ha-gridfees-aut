@@ -1,6 +1,7 @@
 """Time-dependent grid fees with decimal arithmetic and Vienna calendar rules."""
 
 from dataclasses import dataclass
+from collections.abc import Mapping
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from decimal import Decimal, ROUND_HALF_UP
 import json
@@ -21,15 +22,35 @@ class TariffProfile:
     supply_type: str = "grid"
     household: bool = True
     snap_eligible: bool = True
-    eeg_tax_exempt: bool = False
 
     def __post_init__(self) -> None:
         """Reject unsupported supply types and non-boolean assumptions."""
         if self.supply_type not in ("grid", "eeg_local", "eeg_regional"):
             raise ValueError("Unknown supply type")
-        for flag in (self.household, self.snap_eligible, self.eeg_tax_exempt):
+        for flag in (self.household, self.snap_eligible):
             if not isinstance(flag, bool):
                 raise ValueError("Tariff assumptions must be booleans")
+
+    @classmethod
+    def from_config(cls, data: Mapping[str, Any]) -> "TariffProfile":
+        """Normalize current and legacy profiles, ignoring retired assumptions."""
+        supply_type = data.get("supply_type", "grid")
+        eeg = supply_type != "grid"
+        return cls(
+            region=data["region"],
+            supply_type=supply_type,
+            household=True if eeg else data.get("household", True),
+            snap_eligible=False if eeg else data.get("snap_eligible", True),
+        )
+
+    def as_config(self) -> dict[str, str | bool]:
+        """Serialize the supported fields for a saved config entry."""
+        return {
+            "region": self.region,
+            "supply_type": self.supply_type,
+            "household": self.household,
+            "snap_eligible": self.snap_eligible,
+        }
 
 
 @dataclass(frozen=True)
@@ -172,7 +193,7 @@ class TariffCalculator:
 
         tax_row = self._at(self._tax, day)
         tax = Decimal(tax_row["household" if profile.household else "other"])
-        if profile.region in self._tax_exempt_regions or (eeg and profile.eeg_tax_exempt):
+        if profile.region in self._tax_exempt_regions or eeg:
             tax = ZERO
 
         support = self._at(self._support, day)

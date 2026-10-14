@@ -8,8 +8,8 @@ from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
+from .calculator import TariffProfile
 from .const import (
-    CONF_EEG_TAX_EXEMPT,
     CONF_HOUSEHOLD,
     CONF_REGION,
     CONF_SNAP_ELIGIBLE,
@@ -26,6 +26,7 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Collect grid area, supply type and applicable tax assumptions."""
 
     VERSION = 1
+    MINOR_VERSION = 2
 
     def __init__(self) -> None:
         """Initialize the pending tariff profile."""
@@ -37,6 +38,8 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Select the tariff area and the energy allocation type."""
         if user_input is not None:
             self._profile = dict(user_input)
+            if self._profile[CONF_SUPPLY_TYPE] != SUPPLY_GRID:
+                return self._create_profile()
             return await self.async_step_tariff()
 
         return self.async_show_form(
@@ -68,32 +71,28 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Ask only for assumptions that apply to this supply type."""
         if user_input is not None:
-            profile = {**self._profile, **user_input}
-            if profile[CONF_SUPPLY_TYPE] == SUPPLY_GRID:
-                profile[CONF_EEG_TAX_EXEMPT] = False
-            else:
-                profile[CONF_SNAP_ELIGIBLE] = False
-
-            if any(dict(entry.data) == profile for entry in self._async_current_entries()):
-                return self.async_abort(reason="already_configured")
-
-            return self.async_create_entry(
-                title=profile_title(profile[CONF_REGION], profile[CONF_SUPPLY_TYPE]),
-                data=profile,
-            )
+            return self._create_profile(user_input)
 
         fields: dict[Any, Any] = {
             vol.Required(CONF_HOUSEHOLD, default=True): selector.BooleanSelector(),
         }
-        if self._profile[CONF_SUPPLY_TYPE] == SUPPLY_GRID:
-            fields[vol.Required(CONF_SNAP_ELIGIBLE, default=True)] = (
-                selector.BooleanSelector()
-            )
-        else:
-            fields[vol.Required(CONF_EEG_TAX_EXEMPT, default=False)] = (
-                selector.BooleanSelector()
-            )
+        fields[vol.Required(CONF_SNAP_ELIGIBLE, default=True)] = (
+            selector.BooleanSelector()
+        )
 
         return self.async_show_form(
             step_id="tariff", data_schema=vol.Schema(fields)
+        )
+
+    def _create_profile(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Create a normalized profile and reject equivalent legacy profiles."""
+        profile = TariffProfile.from_config({**self._profile, **(user_input or {})})
+        if any(
+            TariffProfile.from_config(entry.data) == profile
+            for entry in self._async_current_entries()
+        ):
+            return self.async_abort(reason="already_configured")
+        return self.async_create_entry(
+            title=profile_title(profile.region, profile.supply_type),
+            data=profile.as_config(),
         )

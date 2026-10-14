@@ -104,7 +104,6 @@ class ForecastTests(unittest.TestCase):
             TariffProfile("BGLD"),
             TariffProfile("BGLD", snap_eligible=False),
             TariffProfile("BGLD", "eeg_local"),
-            TariffProfile("BGLD", "eeg_local", eeg_tax_exempt=True),
             TariffProfile("BGLD", "eeg_regional", household=False),
         ):
             with self.subTest(profile=profile):

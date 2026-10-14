@@ -5,11 +5,14 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.4.2
+## Status: 0.5.0
 
-Configure a grid area, supply type, and applicable tax and SNAP settings. Multiple
-different profiles can be configured; identical profiles are rejected. To change a
-profile in this version, remove it and create a new one.
+Configure a grid area and supply type. Regular grid supply profiles additionally
+ask for the household load-profile rate and SNAP eligibility. Local and regional
+EEG profiles need no tax switches: Elektrizitätsabgabe is automatically zero for
+their allocated EEG energy. Multiple different profiles can be configured;
+identical profiles are rejected. To change a profile in this version, remove it
+and create a new one.
 
 The default profile and device name follows this pattern:
 
@@ -42,25 +45,30 @@ new Recorder history/statistics. Their components remain included in Total grid 
 Price sensors use measurement statistics. They represent unit prices, not
 accumulated costs. The total is the sum of the five fee and levy components.
 
-## Tax assumptions
+## Tax treatment
 
-- **Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil** selects the
+For **Regular grid supply**, the setup asks for:
+
+- **Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil**: selects the
   applicable reduced rate for eligible metering points with household load
   profiles **H0, HA, or HF**. For 2026, § 7 Abs. 16 ElAbgG refers to the eligible
   persons under § 4 Abs. 1 Stromkostenzuschussgesetz. The setup help includes
   links to both provisions. This selects a reduced rate, not a tax exemption.
-- **Do not charge Elektrizitätsabgabe on EEG energy** is off by default.
-  **Off means the tax is charged; on means the EEG tax component is zero.**
-  Enable it only when the exemption conditions are met. This switch is shown only
-  for allocated EEG energy, not for regular grid supply.
-- Example for a supported 2026 household EEG profile outside Kleinwalsertal:
-  off gives **0.001 EUR/kWh Elektrizitätsabgabe**, on gives **0 EUR/kWh**.
-- This exemption is separate from the EEG reduction of Netznutzungsentgelt and
-  the EEG exemption from Erneuerbaren-Förderbeitrag.
-- Kleinwalsertal is treated separately for Elektrizitätsabgabe.
+- **Eligible for SNAP**: selects whether the published SNAP reduction can apply.
 
-Existing saved tax assumptions are retained when upgrading. The new off-by-default
-setting applies to newly created profiles.
+For **Local EEG** and **Regional EEG**, Elektrizitätsabgabe is **automatically
+zero** for allocated EEG energy. There is no exemption switch and no household
+rate question, since the household rate cannot change a zero tax component.
+SNAP does not apply to these profiles. The grid reduction and exemption from
+Erneuerbaren-Förderbeitrag are also applied automatically.
+
+This models qualifying renewable EEG energy consumed within the community with
+fulfilled allocation, evidence, and procedural requirements. Before July 2022,
+the historical EEG calculations assume qualifying photovoltaic generation.
+The exemption does not extend to residual supply purchased from a regular supplier;
+configure that portion as a separate Regular grid supply profile.
+
+Kleinwalsertal is treated separately for Elektrizitätsabgabe.
 
 ## Supported tariffs
 
@@ -164,7 +172,9 @@ in spring, the missing local hour is skipped. The rolling horizon always contain
 3. Restart Home Assistant and reload the browser page.
 4. Open **Settings → Devices & services → Add integration** and search for
    **Gridfees AUT**.
-5. Select a grid area and supply type, then confirm the tariff assumptions.
+5. Select a grid area and supply type. For regular grid supply, confirm the
+   household load-profile rate and SNAP assumptions. EEG profiles finish directly
+   after the grid area and supply type selection.
 6. Open the profile and verify Total grid fees and SNAP active. The five detail
    sensors are available as disabled entities and can be enabled individually.
 7. For a Burgenland regular household profile, the 2026 total outside SNAP hours
@@ -195,8 +205,12 @@ registered. **If your five detail sensors were created enabled in 0.2.x, disable
 those you do not need once in the entity settings.** The new defaults apply when
 entities are first registered. Previously recorded history is not deleted.
 
-Previously saved tax assumptions are also retained. To use a different exemption
-setting, recreate the profile with the intended selection.
+Version 0.5.0 automatically migrates existing profiles and removes the retired
+EEG exemption setting. All local and regional EEG profiles, including those that
+previously had the exemption switched off, now use zero Elektrizitätsabgabe.
+The current total and its seven-day forecast are recalculated. Regular grid supply
+keeps its saved household and SNAP choices. Profile recreation is not required,
+and existing entity IDs and historical records remain unchanged.
 
 The repository includes initial HACS metadata. HACS distribution requires a
 public repository; this project is not currently listed in the HACS default catalog.
@@ -235,7 +249,7 @@ python -m unittest discover -s tests -v
 Tests cover the 84 region/period tariff records across all three supply types,
 explicit reference prices, tariff and tax boundaries, SNAP, EEG, rounding,
 Kleinwalsertal, timezone conversion, unsupported years, invalid inputs, standard
-non-exempt EEG profiles, and generated profile names.
+automatic EEG exemption, legacy profile normalization, and generated profile names.
 
 Forecast tests also cover the requested EUR/kWh-only attribute format,
 hourly rolling updates when the current price does not change, 168-hour windows

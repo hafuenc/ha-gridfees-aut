@@ -42,7 +42,7 @@ class CalculatorTests(unittest.TestCase):
                 with self.subTest(date=row["valid_from"], region=row["region"], supply=supply):
                     price = self.calculator.calculate(
                         local(row["valid_from"] + "T09:00"),
-                        TariffProfile(row["region"], supply, eeg_tax_exempt=True),
+                        TariffProfile(row["region"], supply),
                     )
                     self.assertEqual(price.total, Decimal(row[column]))
                     self.assertEqual(price.grid_loss, Decimal(row["grid_loss_ct"]) / 100)
@@ -57,7 +57,7 @@ class CalculatorTests(unittest.TestCase):
                 self.assertEqual(
                     self.calculator.calculate(
                         local("2026-04-01T10:00"),
-                        TariffProfile(region, supply, eeg_tax_exempt=True),
+                        TariffProfile(region, supply),
                     ).total,
                     Decimal(expected),
                 )
@@ -113,46 +113,69 @@ class CalculatorTests(unittest.TestCase):
                 with self.subTest(region=region, supply=supply):
                     price = self.calculator.calculate(
                         local("2026-06-01T12:00"),
-                        TariffProfile(region, supply, eeg_tax_exempt=True),
+                        TariffProfile(region, supply),
                     )
                     self.assertFalse(price.snap_active)
                     self.assertEqual(price.renewable_support_usage, 0)
                     self.assertEqual(price.renewable_support_loss, 0)
                     self.assertEqual(price.electricity_tax, 0)
 
-    def test_household_tax_and_eeg_exemption_are_independent(self) -> None:
+    def test_household_rate_applies_only_to_regular_grid_supply(self) -> None:
         moment = local("2026-06-01T09:00")
         household = self.calculator.calculate(moment, TariffProfile("BGLD"))
         other = self.calculator.calculate(moment, TariffProfile("BGLD", household=False))
+        self.assertEqual(household.electricity_tax, Decimal("0.001"))
+        self.assertEqual(other.electricity_tax, Decimal("0.0082"))
         self.assertEqual(other.total - household.total, Decimal("0.0072"))
-        exempt = self.calculator.calculate(
-            moment, TariffProfile("BGLD", "eeg_local", eeg_tax_exempt=True)
-        )
-        taxed = self.calculator.calculate(
-            moment, TariffProfile("BGLD", "eeg_local", eeg_tax_exempt=False)
-        )
-        self.assertEqual(taxed.total - exempt.total, Decimal("0.001"))
-        self.assertEqual(taxed.grid_usage, exempt.grid_usage)
-        self.assertEqual(taxed.renewable_support_usage, 0)
-        other_eeg = self.calculator.calculate(
-            moment,
-            TariffProfile("BGLD", "eeg_local", household=False, eeg_tax_exempt=False),
-        )
-        self.assertEqual(other_eeg.electricity_tax, Decimal("0.0082"))
-
-    def test_standard_eeg_profiles_charge_electricity_tax(self) -> None:
         for supply in ("eeg_local", "eeg_regional"):
-            for year, expected_tax in ((2025, "0.015"), (2026, "0.001")):
-                with self.subTest(supply=supply, year=year):
-                    profile = TariffProfile("BGLD", supply)
-                    self.assertFalse(profile.eeg_tax_exempt)
+            for household in (True, False):
+                with self.subTest(supply=supply, household=household):
                     price = self.calculator.calculate(
-                        local(f"{year}-06-01T12:00"), profile
+                        moment, TariffProfile("BGLD", supply, household=household)
                     )
-                    self.assertEqual(price.electricity_tax, Decimal(expected_tax))
+                    self.assertEqual(price.electricity_tax, 0)
+
+    def test_standard_eeg_profiles_are_automatically_exempt(self) -> None:
+        for supply in ("eeg_local", "eeg_regional"):
+            for year in range(2022, 2027):
+                with self.subTest(supply=supply, year=year):
+                    price = self.calculator.calculate(
+                        local(f"{year}-06-01T12:00"), TariffProfile("BGLD", supply)
+                    )
+                    self.assertEqual(price.electricity_tax, 0)
                     self.assertFalse(price.snap_active)
                     self.assertEqual(price.renewable_support_usage, 0)
                     self.assertEqual(price.renewable_support_loss, 0)
+
+    def test_legacy_profile_settings_are_normalized(self) -> None:
+        for supply in ("eeg_local", "eeg_regional"):
+            for old_exemption in (True, False):
+                with self.subTest(supply=supply, old_exemption=old_exemption):
+                    profile = TariffProfile.from_config({
+                        "region": "BGLD",
+                        "supply_type": supply,
+                        "household": False,
+                        "snap_eligible": True,
+                        "eeg_tax_exempt": old_exemption,
+                    })
+                    self.assertEqual(profile.as_config(), {
+                        "region": "BGLD",
+                        "supply_type": supply,
+                        "household": True,
+                        "snap_eligible": False,
+                    })
+                    snapshot = self.calculator.snapshot(local("2026-06-01T12:00"), profile)
+                    self.assertEqual(snapshot.current.electricity_tax, 0)
+                    self.assertEqual(snapshot.forecast[0].price, snapshot.current.total)
+                    self.assertNotIn("eeg_tax_exempt", profile.as_config())
+        regular = TariffProfile.from_config({
+            "region": "BGLD", "supply_type": "grid", "household": False,
+            "snap_eligible": False, "eeg_tax_exempt": True,
+        })
+        self.assertFalse(regular.household)
+        self.assertFalse(regular.snap_eligible)
+        self.assertNotIn("eeg_tax_exempt", regular.as_config())
+        self.assertEqual(TariffProfile.from_config(regular.as_config()), regular)
 
     def test_kleinwalsertal_tax_exemption(self) -> None:
         for year in range(2022, 2027):
@@ -160,7 +183,7 @@ class CalculatorTests(unittest.TestCase):
                 with self.subTest(year=year, supply=supply):
                     price = self.calculator.calculate(
                         local(f"{year}-06-01T12:00"),
-                        TariffProfile("KLEINWALSERTAL", supply, household=False, eeg_tax_exempt=False),
+                        TariffProfile("KLEINWALSERTAL", supply, household=False),
                     )
                     self.assertEqual(price.electricity_tax, 0)
 
