@@ -18,7 +18,7 @@
           "snap_eligible": "Eligible for SNAP"
         },
         "data_description": {
-          "household": "Der Entnahmezählpunkt hat eines der begünstigten Lastprofile H0, HA oder HF. Für 2026 verweist [§ 7 Abs. 16 ElAbgG](https://ris.bka.gv.at/eli/bgbl/1996/201/P7/NOR40273847) auf den berechtigten Personenkreis nach [§ 4 Abs. 1 Stromkostenzuschussgesetz](https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760). Ein: ermäßigter Satz; aus: Satz für sonstige Lieferungen.",
+          "household": "Der Entnahmezählpunkt hat eines der begünstigten Lastprofile H0, HA oder HF. Für 2026 verweist [§ 7 Abs. 16 ElAbgG]({elabgg_url}) auf den berechtigten Personenkreis nach [§ 4 Abs. 1 Stromkostenzuschussgesetz]({stromkostenzuschuss_url}). Ein: ermäßigter Satz; aus: Satz für sonstige Lieferungen.",
           "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator."
         }
       }

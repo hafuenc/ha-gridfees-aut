@@ -81,7 +81,12 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
         return self.async_show_form(
-            step_id="tariff", data_schema=vol.Schema(fields)
+            step_id="tariff",
+            data_schema=vol.Schema(fields),
+            description_placeholders={
+                "elabgg_url": "https://ris.bka.gv.at/eli/bgbl/1996/201/P7/NOR40273847",
+                "stromkostenzuschuss_url": "https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760",
+            },
         )
 
     def _create_profile(self, user_input: dict[str, Any] | None = None) -> FlowResult:
