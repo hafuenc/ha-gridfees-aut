@@ -21,7 +21,7 @@ class TariffProfile:
     supply_type: str = "grid"
     household: bool = True
     snap_eligible: bool = True
-    eeg_tax_exempt: bool = True
+    eeg_tax_exempt: bool = False
 
     def __post_init__(self) -> None:
         """Reject unsupported supply types and non-boolean assumptions."""

@@ -17,8 +17,8 @@ from .const import (
     DOMAIN,
     REGIONS,
     SUPPLY_GRID,
-    SUPPLY_LABELS,
     SUPPLY_TYPES,
+    profile_title,
 )
 
 
@@ -78,10 +78,7 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_abort(reason="already_configured")
 
             return self.async_create_entry(
-                title=(
-                    f"{REGIONS[profile[CONF_REGION]]} · "
-                    f"{SUPPLY_LABELS[profile[CONF_SUPPLY_TYPE]]}"
-                ),
+                title=profile_title(profile[CONF_REGION], profile[CONF_SUPPLY_TYPE]),
                 data=profile,
             )
 
@@ -93,7 +90,7 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 selector.BooleanSelector()
             )
         else:
-            fields[vol.Required(CONF_EEG_TAX_EXEMPT, default=True)] = (
+            fields[vol.Required(CONF_EEG_TAX_EXEMPT, default=False)] = (
                 selector.BooleanSelector()
             )
 

@@ -25,6 +25,7 @@ class GridfeesSnapSensor(GridfeesEntity, BinarySensorEntity):
 
     _attr_translation_key = "snap_active"
     _attr_icon = "mdi:white-balance-sunny"
+    _attr_entity_registry_enabled_default = True
 
     def __init__(self, coordinator: GridfeesCoordinator) -> None:
         """Initialize a stable SNAP status identity."""

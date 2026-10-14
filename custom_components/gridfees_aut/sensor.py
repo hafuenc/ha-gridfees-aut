@@ -47,6 +47,7 @@ class GridfeesPriceSensor(GridfeesEntity, SensorEntity):
             state_class=SensorStateClass.MEASUREMENT,
             suggested_display_precision=5,
             icon="mdi:cash",
+            entity_registry_enabled_default=key == "total",
         )
 
     @property

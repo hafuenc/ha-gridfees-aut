@@ -3,7 +3,7 @@
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, profile_title
 from .coordinator import GridfeesCoordinator
 
 
@@ -18,7 +18,7 @@ class GridfeesEntity(CoordinatorEntity[GridfeesCoordinator]):
         self._attr_unique_id = f"{coordinator.entry.entry_id}_{key}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, coordinator.entry.entry_id)},
-            name=coordinator.entry.title,
+            name=profile_title(coordinator.profile.region, coordinator.profile.supply_type),
             entry_type=DeviceEntryType.SERVICE,
             manufacturer="Gridfees AUT",
             model="Grid level 7 · single tariff",

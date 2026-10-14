@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Austrian tariff profile",
-        "description": "Select the grid area and supply type. Renewable energy community (EEG) tariffs apply only to allocated community energy; create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff.",
+        "description": "Select the grid area and supply type. EEG (Erneuerbare-Energie-Gemeinschaft) tariffs apply only to allocated community energy; create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff.",
         "data": {
           "region": "Grid area",
           "supply_type": "Supply type"
@@ -14,14 +14,14 @@
         "title": "Tariff assumptions",
         "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT.",
         "data": {
-          "household": "Apply household electricity tax rules",
+          "household": "Apply household rate for Elektrizitätsabgabe",
           "snap_eligible": "Eligible for SNAP",
-          "eeg_tax_exempt": "Apply EEG electricity tax exemption"
+          "eeg_tax_exempt": "Apply EEG exemption from Elektrizitätsabgabe"
         },
         "data_description": {
-          "household": "Use the household electricity tax rate when applicable. Relevant when electricity tax applies.",
+          "household": "Selects the household tax rate when applicable. This is not an exemption: Elektrizitätsabgabe is still charged unless a separate exemption applies.",
           "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator.",
-          "eeg_tax_exempt": "Affects electricity tax only; the EEG grid discount still applies. Requires qualifying renewable EEG energy and fulfilled exemption conditions."
+          "eeg_tax_exempt": "Off by default: Elektrizitätsabgabe is charged. Enable only if the exemption requirements for qualifying renewable EEG energy are met. The EEG reduction of Netznutzungsentgelt and exemption from Erneuerbaren-Förderbeitrag apply independently."
         }
       }
     },
@@ -41,22 +41,22 @@
   "entity": {
     "sensor": {
       "total": {
-        "name": "Total grid fees and levies"
+        "name": "Total grid fees"
       },
       "grid_usage": {
-        "name": "Grid usage fee"
+        "name": "Netznutzungsentgelt"
       },
       "grid_loss": {
-        "name": "Grid loss fee"
+        "name": "Netzverlustentgelt"
       },
       "electricity_tax": {
-        "name": "Electricity tax"
+        "name": "Elektrizitätsabgabe"
       },
       "renewable_support_usage": {
-        "name": "Renewable support contribution (grid usage)"
+        "name": "Erneuerbaren-Förderbeitrag (Netznutzungsentgelt)"
       },
       "renewable_support_loss": {
-        "name": "Renewable support contribution (grid loss)"
+        "name": "Erneuerbaren-Förderbeitrag (Netzverlustentgelt)"
       }
     },
     "binary_sensor": {
