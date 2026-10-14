@@ -110,18 +110,27 @@ version before 2027. The `tariff_valid_until` attribute is an exclusive boundary
 ## Seven-day forecast on Total grid fees
 
 The **Total grid fees** sensor exposes its forecast in the `data` attribute.
-It contains **168 one-hour intervals**, starting at the beginning of the current
-UTC hour and extending to that hour plus 168 hours. The first row therefore
-includes the currently running hour. The window advances on each hourly refresh.
-This is a rolling seven-times-24-hour horizon, not seven local calendar dates.
+It contains **periods of constant price**: consecutive hours with the same total
+are combined, and a new row starts only when the price changes, such as at the
+start or end of a SNAP window. With a constant price, one row covers all seven
+days. The horizon starts at the beginning of the current UTC hour and extends
+168 hours. The window advances on each hourly refresh. This is a rolling
+seven-times-24-hour horizon, not seven local calendar dates.
 
 Each row follows this format:
 
 ```yaml
 data:
-  - start_time: '2026-10-14T12:00:00+02:00'
-    end_time: '2026-10-14T13:00:00+02:00'
+  - start_time: '2026-06-01T09:00:00+02:00'
+    end_time: '2026-06-01T10:00:00+02:00'
     price_eur_per_kwh: 0.0918
+  - start_time: '2026-06-01T10:00:00+02:00'
+    end_time: '2026-06-01T16:00:00+02:00'
+    price_eur_per_kwh: 0.0749
+  - start_time: '2026-06-01T16:00:00+02:00'
+    end_time: '2026-06-02T10:00:00+02:00'
+    price_eur_per_kwh: 0.0918
+  # Further price periods continue through the seven-day horizon.
 ```
 
 This example uses a regular Burgenland household profile. All values are net
@@ -130,11 +139,11 @@ profile's SNAP, EEG, and tax assumptions. They are calculated from the supported
 tariff schedule rather than estimated market prices.
 
 Additional attributes identify `forecast_start`, `forecast_end`, `forecast_hours`,
-`forecast_interval_minutes`, `forecast_timezone`, `tariff_timezone`, and
+`forecast_interval_mode: change_of_value`, `forecast_timezone`, `tariff_timezone`, and
 `forecast_complete`. If any forecast hour falls outside supported tariff dates,
 the `price_eur_per_kwh` field for that row is `null` and `forecast_complete` is `false`.
-The window still contains 168 intervals. Missing rates are never replaced by zero
-or carried forward from another year.
+The window still covers 168 hours; consecutive unsupported hours form one null
+period. Missing rates are never replaced by zero or carried forward from another year.
 
 Only Total grid fees carries the forecast. It is available to dashboard cards,
 templates, and automations through the live `data` attribute. The forecast table
@@ -158,10 +167,10 @@ correct +01:00/+02:00 offset. If it is UTC or another timezone, the same instant
 are displayed in that timezone with unchanged prices. Timezone changes take
 effect on the next refresh or integration reload.
 
-The intervals advance in UTC to avoid duplicate or missing physical hours at
-clock changes. In autumn, the repeated local hour has different UTC offsets;
-in spring, the missing local hour is skipped. The rolling horizon always contains
-168 actual hours, including weeks with a daylight saving change.
+The calculation advances in UTC to avoid duplicate or missing physical hours at
+clock changes, then combines equal prices. Periods may span a clock change and
+therefore have different UTC offsets at their start and end. The rolling horizon
+always covers 168 actual hours, including weeks with a daylight saving change.
 
 ## Installation and verification
 

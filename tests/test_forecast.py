@@ -30,10 +30,10 @@ class ForecastTests(unittest.TestCase):
         )
         attributes = snapshot.forecast_attributes()
         rows = attributes["data"]
-        self.assertEqual(len(rows), 168)
+        self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0], {
             "start_time": "2026-10-14T12:00:00+02:00",
-            "end_time": "2026-10-14T13:00:00+02:00",
+            "end_time": "2026-10-21T12:00:00+02:00",
             "price_eur_per_kwh": 0.0918,
         })
         self.assertEqual(rows[-1]["end_time"], "2026-10-21T12:00:00+02:00")
@@ -41,7 +41,8 @@ class ForecastTests(unittest.TestCase):
         self.assertEqual(attributes["tariff_timezone"], "Europe/Vienna")
         self.assertTrue(attributes["forecast_complete"])
         self.assertEqual(attributes["forecast_hours"], 168)
-        self.assertEqual(attributes["forecast_interval_minutes"], 60)
+        self.assertEqual(attributes["forecast_interval_mode"], "change_of_value")
+        self.assertNotIn("forecast_interval_minutes", attributes)
         json.dumps(attributes, allow_nan=False)
 
     def test_forecast_advances_even_when_current_price_does_not_change(self) -> None:
@@ -122,7 +123,7 @@ class ForecastTests(unittest.TestCase):
         )
         attributes = snapshot.forecast_attributes()
         self.assertIsNotNone(snapshot.current)
-        self.assertEqual(len(attributes["data"]), 168)
+        self.assertEqual(len(attributes["data"]), 2)
         self.assertFalse(attributes["forecast_complete"])
         self.assertEqual(attributes["data"][0]["price_eur_per_kwh"], 0.0918)
         for row in attributes["data"][1:]:
@@ -133,6 +134,52 @@ class ForecastTests(unittest.TestCase):
         )
         self.assertIsNone(unsupported.current)
         self.assertTrue(all(row.price is None for row in unsupported.forecast))
+        self.assertEqual(len(unsupported.forecast_attributes()["data"]), 1)
+
+    def test_change_periods_cover_every_hour_without_gaps_or_equal_neighbors(self) -> None:
+        for moment in (
+            "2026-06-01T09:15",  # Repeated daily SNAP windows.
+            "2026-09-30T12:30",  # End of SNAP season.
+            "2026-03-28T12:30",  # Spring clock change and April tariff boundary.
+            "2026-10-24T12:30",  # Autumn clock change.
+            "2026-12-31T23:30",  # Boundary of supported rates.
+        ):
+            with self.subTest(moment=moment):
+                snapshot = self.calculator.snapshot(vienna(moment), TariffProfile("BGLD"))
+                rows = snapshot.forecast_attributes()["data"]
+                self.assertEqual(rows[0]["start_time"], snapshot.forecast[0].start_time)
+                self.assertEqual(rows[-1]["end_time"], snapshot.forecast[-1].end_time)
+                for index, row in enumerate(rows):
+                    start = datetime.fromisoformat(row["start_time"])
+                    end = datetime.fromisoformat(row["end_time"])
+                    self.assertLess(start, end)
+                    if index:
+                        self.assertEqual(rows[index - 1]["end_time"], row["start_time"])
+                        self.assertNotEqual(rows[index - 1]["price_eur_per_kwh"], row["price_eur_per_kwh"])
+                    for interval in snapshot.forecast:
+                        instant = datetime.fromisoformat(interval.start_time)
+                        if start <= instant < end:
+                            self.assertEqual(row["price_eur_per_kwh"], interval.as_dict()["price_eur_per_kwh"])
+
+    def test_snap_window_is_one_period(self) -> None:
+        snapshot = self.calculator.snapshot(vienna("2026-06-01T09:15"), TariffProfile("BGLD"))
+        rows = snapshot.forecast_attributes()["data"]
+        self.assertEqual(rows[:3], [
+            {"start_time": "2026-06-01T09:00:00+02:00", "end_time": "2026-06-01T10:00:00+02:00", "price_eur_per_kwh": 0.0918},
+            {"start_time": "2026-06-01T10:00:00+02:00", "end_time": "2026-06-01T16:00:00+02:00", "price_eur_per_kwh": 0.0749},
+            {"start_time": "2026-06-01T16:00:00+02:00", "end_time": "2026-06-02T10:00:00+02:00", "price_eur_per_kwh": 0.0918},
+        ])
+
+    def test_eeg_and_snap_ineligible_profiles_have_one_constant_period(self) -> None:
+        for profile in (
+            TariffProfile("BGLD", snap_eligible=False),
+            TariffProfile("BGLD", "eeg_local"),
+            TariffProfile("BGLD", "eeg_regional"),
+        ):
+            with self.subTest(profile=profile):
+                rows = self.calculator.snapshot(vienna("2026-06-01T09:15"), profile).forecast_attributes()["data"]
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]["end_time"], "2026-06-08T09:00:00+02:00")
 
     def test_naive_time_is_rejected(self) -> None:
         with self.assertRaises(ValueError):

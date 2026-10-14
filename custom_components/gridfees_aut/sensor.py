@@ -44,7 +44,7 @@ class GridfeesPriceSensor(GridfeesEntity, SensorEntity):
             "forecast_start",
             "forecast_end",
             "forecast_hours",
-            "forecast_interval_minutes",
+            "forecast_interval_mode",
             "forecast_timezone",
             "forecast_complete",
             "tariff_timezone",

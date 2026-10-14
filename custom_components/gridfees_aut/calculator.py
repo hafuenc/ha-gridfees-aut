@@ -102,13 +102,26 @@ class TariffSnapshot:
     forecast_timezone: str
 
     def forecast_attributes(self) -> dict[str, Any]:
-        """Build live sensor attributes without including changing timestamps."""
+        """Expose contiguous periods, starting a new row only when price changes."""
+        periods: list[PriceInterval] = []
+        for interval in self.forecast:
+            if (
+                periods
+                and periods[-1].price == interval.price
+                and periods[-1].end_time == interval.start_time
+            ):
+                previous = periods[-1]
+                periods[-1] = PriceInterval(
+                    previous.start_time, interval.end_time, interval.price
+                )
+            else:
+                periods.append(interval)
         return {
-            "data": [interval.as_dict() for interval in self.forecast],
+            "data": [interval.as_dict() for interval in periods],
             "forecast_start": self.forecast[0].start_time,
             "forecast_end": self.forecast[-1].end_time,
             "forecast_hours": 168,
-            "forecast_interval_minutes": 60,
+            "forecast_interval_mode": "change_of_value",
             "forecast_timezone": self.forecast_timezone,
             "tariff_timezone": "Europe/Vienna",
             "forecast_complete": all(interval.price is not None for interval in self.forecast),
