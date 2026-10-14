@@ -13,24 +13,24 @@ SUPPLY_EEG_LOCAL = "eeg_local"
 SUPPLY_EEG_REGIONAL = "eeg_regional"
 SUPPLY_TYPES = (SUPPLY_GRID, SUPPLY_EEG_LOCAL, SUPPLY_EEG_REGIONAL)
 SUPPLY_LABELS = {
-    SUPPLY_GRID: "Netzbezug",
-    SUPPLY_EEG_LOCAL: "EEG lokal",
-    SUPPLY_EEG_REGIONAL: "EEG regional",
+    SUPPLY_GRID: "Regular grid supply",
+    SUPPLY_EEG_LOCAL: "Local EEG",
+    SUPPLY_EEG_REGIONAL: "Regional EEG",
 }
 
 REGIONS = {
     "BGLD": "Burgenland",
-    "KTN": "Kärnten",
+    "KTN": "Carinthia",
     "KLAGENFURT": "Klagenfurt",
-    "NOE": "Niederösterreich",
-    "OOE": "Oberösterreich",
+    "NOE": "Lower Austria",
+    "OOE": "Upper Austria",
     "LINZ": "Linz",
     "SBG": "Salzburg",
-    "STMK": "Steiermark",
+    "STMK": "Styria",
     "GRAZ": "Graz",
-    "TIROL": "Tirol",
+    "TIROL": "Tyrol",
     "INNSBRUCK": "Innsbruck",
     "VBG": "Vorarlberg",
-    "WIEN": "Wien",
+    "WIEN": "Vienna",
     "KLEINWALSERTAL": "Kleinwalsertal",
 }

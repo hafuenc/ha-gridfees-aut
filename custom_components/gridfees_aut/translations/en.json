@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Austrian tariff profile",
-        "description": "Select the grid area and supply type. EEG tariffs apply only to allocated community energy; create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff. This development version does not create price sensors yet.",
+        "description": "Select the grid area and supply type. Renewable energy community (EEG) tariffs apply only to allocated community energy; create a separate regular grid profile for residual supply. Scope: grid level 7, non-metered capacity, single tariff.",
         "data": {
           "region": "Grid area",
           "supply_type": "Supply type"
@@ -12,16 +12,16 @@
       },
       "tariff": {
         "title": "Tariff assumptions",
-        "description": "Confirm the conditions applicable to your supply. Future price values will be calculated in EUR/kWh excluding VAT.",
+        "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT.",
         "data": {
           "household": "Apply household electricity tax rules",
           "snap_eligible": "Eligible for SNAP",
           "eeg_tax_exempt": "Apply EEG electricity tax exemption"
         },
         "data_description": {
-          "household": "Matches Household in the MATLAB function. Relevant when electricity tax applies.",
-          "snap_eligible": "Matches SNAPEligible: electronically measured quarter-hourly quantities are read by the grid operator.",
-          "eeg_tax_exempt": "Matches EEGTaxExempt. Affects electricity tax only; the EEG grid discount still applies. Requires qualifying renewable EEG energy and fulfilled exemption conditions."
+          "household": "Use the household electricity tax rate when applicable. Relevant when electricity tax applies.",
+          "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator.",
+          "eeg_tax_exempt": "Affects electricity tax only; the EEG grid discount still applies. Requires qualifying renewable EEG energy and fulfilled exemption conditions."
         }
       }
     },
