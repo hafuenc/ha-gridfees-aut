@@ -5,7 +5,7 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.4.1
+## Status: 0.4.2
 
 Configure a grid area, supply type, and applicable tax and SNAP settings. Multiple
 different profiles can be configured; identical profiles are rejected. To change a
@@ -44,8 +44,11 @@ accumulated costs. The total is the sum of the five fee and levy components.
 
 ## Tax assumptions
 
-- The household switch selects the applicable household rate for
-  **Elektrizitätsabgabe**. It does **not** indicate exemption.
+- **Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil** selects the
+  applicable reduced rate for eligible metering points with household load
+  profiles **H0, HA, or HF**. For 2026, § 7 Abs. 16 ElAbgG refers to the eligible
+  persons under § 4 Abs. 1 Stromkostenzuschussgesetz. The setup help includes
+  links to both provisions. This selects a reduced rate, not a tax exemption.
 - **Do not charge Elektrizitätsabgabe on EEG energy** is off by default.
   **Off means the tax is charged; on means the EEG tax component is zero.**
   Enable it only when the exemption conditions are met. This switch is shown only

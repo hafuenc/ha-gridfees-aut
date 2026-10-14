@@ -54,6 +54,12 @@ Dated consolidated texts:
 - [ElAbgG, 2025-01-01](https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10005027&FassungVom=2025-01-01).
 - [ElAbgG, 2026-04-01](https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10005027&FassungVom=2026-04-01).
 
+For the 2026 household rate, § 7 Abs. 16 ElAbgG refers to eligible natural persons
+under [§ 4 Abs. 1 Stromkostenzuschussgesetz (SKZG)](https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760).
+[Anlage I to § 4 SKZG](https://ris.bka.gv.at/eli/bgbl/i/2022/156/ANL1/NOR40250766)
+lists the eligible standard load profiles H0, HA, and HF. These eligibility criteria
+are selected by the user, not checked by the integration.
+
 The household rate is not a tax exemption. The EEG exemption must be enabled
 explicitly when its conditions are met; it is off by default for new profiles.
 Existing saved assumptions are retained during upgrades.

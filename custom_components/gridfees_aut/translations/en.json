@@ -14,12 +14,12 @@
         "title": "Tariff assumptions",
         "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT.",
         "data": {
-          "household": "Use household rate for Elektrizitätsabgabe",
+          "household": "Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil",
           "snap_eligible": "Eligible for SNAP",
           "eeg_tax_exempt": "Do not charge Elektrizitätsabgabe on EEG energy"
         },
         "data_description": {
-          "household": "On: use the household rate. Off: use the rate for other deliveries. This switch never removes Elektrizitätsabgabe; it only selects the applicable rate.",
+          "household": "Der Entnahmezählpunkt hat eines der begünstigten Lastprofile H0, HA oder HF. Für 2026 verweist [§ 7 Abs. 16 ElAbgG](https://ris.bka.gv.at/eli/bgbl/1996/201/P7/NOR40273847) auf den berechtigten Personenkreis nach [§ 4 Abs. 1 Stromkostenzuschussgesetz](https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760). Ein: ermäßigter Satz; aus: Satz für sonstige Lieferungen.",
           "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator.",
           "eeg_tax_exempt": "Off (default): charge Elektrizitätsabgabe at the selected rate. On: set Elektrizitätsabgabe to zero for allocated EEG energy. Enable only if the exemption requirements are met. This is independent of the EEG reduction of Netznutzungsentgelt and exemption from Erneuerbaren-Förderbeitrag."
         }
