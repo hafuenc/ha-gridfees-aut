@@ -41,7 +41,7 @@ English; official German names for Entgelte, Steuern, and Abgaben are retained.
 
 ## Sensors
 
-Each profile registers six price sensors and one binary sensor:
+Each profile registers six price sensors and two binary sensors:
 
 | Entity | Unit | Enabled by default |
 | --- | --- | --- |
@@ -52,6 +52,7 @@ Each profile registers six price sensors and one binary sensor:
 | Erneuerbaren-Förderbeitrag (Netznutzungsentgelt) | EUR/kWh | No |
 | Erneuerbaren-Förderbeitrag (Netzverlustentgelt) | EUR/kWh | No |
 | SNAP active | On/off | Yes |
+| WiNAP active | On/off | Yes |
 
 The five detail sensors are registered as disabled entities. Enable only the
 ones you need in **Settings → Devices & services → Entities**, including disabled
@@ -157,7 +158,11 @@ Total grid fees and its seven-day forecast both use the selected scenario.
 Price sensor attributes identify `winap_simulation_enabled`,
 `winap_simulated_active`, and `pricing_mode` (`published_tariffs` or
 `winap_simulation`). **SNAP active remains off during simulated winter nights**;
-it continues to describe the actual summer SNAP window only. The simulation
+it continues to describe the actual summer SNAP window only.
+**WiNAP active** is a separate binary sensor, enabled by default. It is on only
+while the optional winter simulation applies, and off when simulation is disabled,
+outside the winter window, or for allocated EEG energy. It becomes unavailable
+outside supported tariff dates. Enabling this entity does not enable simulation. The simulation
 markers remain in Recorder attributes so historical simulated prices can be
 identified. Turning the simulation off does not rewrite recorded history.
 
@@ -281,6 +286,11 @@ The integration icon is packaged in `brand/icon.png`. Home Assistant 2026.3 or
 newer supports these local brand images. No extra image configuration is needed.
 
 ### Updating from an earlier version
+
+Version **0.6.1** automatically adds the enabled **WiNAP active** indicator to
+existing profiles. Install the HACS update and restart Home Assistant; existing
+entity IDs and assumptions are preserved. Refresh the browser to reload setup
+translations.
 
 For **0.6.0**, install the HACS update and restart Home Assistant. Existing
 profiles, enabled entities, entity IDs, and saved household/SNAP choices are
