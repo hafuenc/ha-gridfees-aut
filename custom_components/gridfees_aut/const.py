@@ -6,6 +6,7 @@ CONF_REGION = "region"
 CONF_SUPPLY_TYPE = "supply_type"
 CONF_HOUSEHOLD = "household"
 CONF_SNAP_ELIGIBLE = "snap_eligible"
+CONF_SIMULATE_WINAP = "simulate_winap"
 
 SUPPLY_GRID = "grid"
 SUPPLY_EEG_LOCAL = "eeg_local"

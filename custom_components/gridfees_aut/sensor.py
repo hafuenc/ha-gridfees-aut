@@ -75,6 +75,15 @@ class GridfeesPriceSensor(GridfeesEntity, SensorEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Expose a seven-day forecast only on Total grid fees."""
         attributes = dict(self._attr_extra_state_attributes)
+        current = self.coordinator.data.current if self.coordinator.data else None
+        attributes["winap_simulated_active"] = (
+            current.winap_simulated_active if current is not None else None
+        )
+        attributes["pricing_mode"] = (
+            None if current is None
+            else "winap_simulation" if current.winap_simulated_active
+            else "published_tariffs"
+        )
         if self.entity_description.key == "total" and self.coordinator.data is not None:
             attributes.update(self.coordinator.data.forecast_attributes())
         return attributes

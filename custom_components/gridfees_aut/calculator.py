@@ -22,12 +22,13 @@ class TariffProfile:
     supply_type: str = "grid"
     household: bool = True
     snap_eligible: bool = True
+    simulate_winap: bool = False
 
     def __post_init__(self) -> None:
         """Reject unsupported supply types and non-boolean assumptions."""
         if self.supply_type not in ("grid", "eeg_local", "eeg_regional"):
             raise ValueError("Unknown supply type")
-        for flag in (self.household, self.snap_eligible):
+        for flag in (self.household, self.snap_eligible, self.simulate_winap):
             if not isinstance(flag, bool):
                 raise ValueError("Tariff assumptions must be booleans")
 
@@ -41,6 +42,7 @@ class TariffProfile:
             supply_type=supply_type,
             household=True if eeg else data.get("household", True),
             snap_eligible=False if eeg else data.get("snap_eligible", True),
+            simulate_winap=False if eeg else data.get("simulate_winap", False),
         )
 
     def as_config(self) -> dict[str, str | bool]:
@@ -50,6 +52,7 @@ class TariffProfile:
             "supply_type": self.supply_type,
             "household": self.household,
             "snap_eligible": self.snap_eligible,
+            "simulate_winap": self.simulate_winap,
         }
 
 
@@ -63,6 +66,7 @@ class PriceBreakdown:
     renewable_support_usage: Decimal
     renewable_support_loss: Decimal
     snap_active: bool
+    winap_simulated_active: bool = False
 
     @property
     def total(self) -> Decimal:
@@ -135,6 +139,14 @@ def _in_vienna(moment: datetime) -> datetime:
     return moment.astimezone(VIENNA)
 
 
+def _winter_night(local: datetime) -> bool:
+    """Use nights starting October 1 through March 31, from 23:00 to 05:00."""
+    if 5 <= local.hour < 23:
+        return False
+    night = local.date() - timedelta(days=1) if local.hour < 5 else local.date()
+    return night.month in (10, 11, 12, 1, 2, 3)
+
+
 class TariffCalculator:
     """Evaluate a versioned tariff dataset; never extrapolate unknown years."""
 
@@ -192,6 +204,7 @@ class TariffCalculator:
         loss = Decimal(tariff["grid_loss_ct"]) / HUNDRED
         eeg = profile.supply_type != "grid"
         snap = False
+        winap_simulated = False
         if eeg:
             usage_ct = (usage_ct * self._factors[profile.supply_type]).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
@@ -203,6 +216,17 @@ class TariffCalculator:
             )
             if snap:
                 usage_ct = Decimal(tariff["snap_usage_ct"])
+
+        # This opt-in scenario borrows a published SNAP price, not a WiNAP rate.
+        # Earlier years have no SNAP price and are never extrapolated.
+        if (
+            not eeg
+            and profile.simulate_winap
+            and "snap_usage_ct" in tariff
+            and _winter_night(local)
+        ):
+            usage_ct = Decimal(tariff["snap_usage_ct"])
+            winap_simulated = True
 
         tax_row = self._at(self._tax, day)
         tax = Decimal(tax_row["household" if profile.household else "other"])
@@ -217,6 +241,7 @@ class TariffCalculator:
             renewable_support_usage=ZERO if eeg else Decimal(support["grid_usage"]),
             renewable_support_loss=ZERO if eeg else Decimal(support["grid_loss"]),
             snap_active=snap,
+            winap_simulated_active=winap_simulated,
         )
 
     def series(

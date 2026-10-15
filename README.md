@@ -1,18 +1,34 @@
 # Gridfees AUT
 
+> **🚧 Beta — under active development**
+>
+> This integration is still under development. Features, configuration options,
+> and calculations may change, and errors may occur.
+>
+> All calculated prices and forecasts are provided for informational purposes
+> only. Verify the results against the applicable regulations and your grid
+> operator’s published tariffs before relying on them.
+>
+> **Use at your own risk.** This software is provided “as is”, without warranty
+> of any kind. To the extent permitted by law, the authors and contributors
+> accept no liability for errors, financial losses, or other damages arising
+> from its use.
+
 <img src="custom_components/gridfees_aut/brand/icon.png" alt="Gridfees AUT icon" width="128">
 
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.5.3
+## Status: 0.6.0 (Beta)
 
 Configure a grid area and supply type. Regular grid supply profiles additionally
-ask for the household load-profile rate and SNAP eligibility. Local and regional
+ask for the household load-profile rate, SNAP eligibility, and optional WiNAP
+simulation. Local and regional
 EEG profiles need no tax switches: Elektrizitätsabgabe is automatically zero for
 their allocated EEG energy. Multiple different profiles can be configured;
-identical profiles are rejected. To change a profile in this version, remove it
-and create a new one.
+identical profiles are rejected. To change the assumptions of an existing regular
+grid profile, open its entry menu under **Settings → Devices & services → Gridfees
+AUT** and select **Reconfigure**. The profile and its entity IDs are preserved.
 
 The default profile and device name follows this pattern:
 
@@ -49,16 +65,21 @@ accumulated costs. The total is the sum of the five fee and levy components.
 
 For **Regular grid supply**, the setup asks for:
 
-- **Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil**: selects the
+- **Reduced Elektrizitätsabgabe for household load profiles**: selects the
   applicable reduced rate for eligible metering points with household load
   profiles **H0, HA, or HF**. For 2026, § 7 Abs. 16 ElAbgG refers to the eligible
   persons under § 4 Abs. 1 Stromkostenzuschussgesetz. The setup help includes
   links to both provisions. This selects a reduced rate, not a tax exemption.
-- **Eligible for SNAP**: selects whether the published SNAP reduction can apply.
+- **Eligible for SNAP (Sommer-Nieder-Arbeitspreis)**: selects whether the published
+  SNAP reduction can apply. See [§ 2 Abs. 1 Z 9 und § 5 Abs. 1b SNE-V 2018](https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=20010107).
+- **Simulate WiNAP (Winter-Nieder-Arbeitspreis)**: enables the optional winter
+  scenario described below. It is **off by default** and independent of the
+  summer SNAP setting.
 
 For **Local EEG** and **Regional EEG**, Elektrizitätsabgabe is **automatically
-zero** for allocated EEG energy. There is no exemption switch and no household
-rate question, since the household rate cannot change a zero tax component.
+zero** for allocated EEG energy. There is no exemption switch, household
+rate question, or WiNAP simulation option. The household rate cannot change a
+zero tax component.
 SNAP does not apply to these profiles. The grid reduction and exemption from
 Erneuerbaren-Förderbeitrag are also applied automatically.
 
@@ -84,7 +105,8 @@ Kleinwalsertal is treated separately for Elektrizitätsabgabe.
 
 Prices are calculated when a profile loads and refreshed at each UTC hour
 boundary. This covers Vienna midnight, seasonal tariff changes, and the 10:00 and
-16:00 SNAP boundaries. Unchanged snapshots do not trigger unnecessary entity
+16:00 SNAP boundaries, as well as the 23:00 and 05:00 simulation boundaries.
+Unchanged snapshots do not trigger unnecessary entity
 updates within the same hour. The forecast advances hourly even when the current
 unit price stays constant. The refresh timer is removed when a profile unloads.
 
@@ -100,12 +122,44 @@ eligible for EEG rates.
 
 The scope excludes the energy purchase price, VAT, fixed Grund-/Leistungspreise,
 Entgelte für Messleistungen, local levies, biomass subsidies, and
-Erneuerbaren-Förderpauschale. Hypothetical winter tariff scenarios are outside
-the regular model.
+Erneuerbaren-Förderpauschale. WiNAP is available only as the explicit simulation
+option below; it is not part of the published tariff calculation.
 
 **No extrapolation:** all price sensors and SNAP status become unavailable outside
 the supported date range. Updated tariff data must be supplied in a new integration
 version before 2027. The `tariff_valid_until` attribute is an exclusive boundary.
+
+## Optional WiNAP simulation
+
+**Simulate WiNAP (Winter-Nieder-Arbeitspreis)** is off by default. Enabling it
+replaces only the variable Netznutzungsentgelt with the selected tariff's
+published SNAP price during winter nights. Other fees, taxes, and contributions
+remain calculated under their normal rules. This is a fictional scenario, not
+an announced WiNAP rate or an estimate of the future rate.
+
+The winter window covers nights **starting from 1 October through 31 March**,
+from **23:00 to 05:00 the following day**, in Europe/Vienna. Consequently, the
+first night starts at 23:00 on 1 October and the last night ends at 05:00 on
+1 April. The overnight window follows local time through daylight saving changes.
+The simulation uses SNAP prices available in the **2026** dataset; it does not
+invent reduced prices for 2022–2025 or extend tariff validity into 2027.
+
+The legal WiNAP first applies from **1 October 2027** under
+[§ 7 Abs. 4 und § 32 Abs. 4 SNE-G-V, BGBl. II Nr. 299/2026](https://ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2026_II_299/BGBLA_2026_II_299.html).
+Future published prices require a separate tariff-data update.
+
+The switch is available only for **Regular grid supply**. It can be enabled
+independently of summer SNAP eligibility; enabling it explicitly requests a
+fictional scenario. Allocated EEG energy never receives a simulated WiNAP
+reduction in addition to its existing EEG reduction.
+
+Total grid fees and its seven-day forecast both use the selected scenario.
+Price sensor attributes identify `winap_simulation_enabled`,
+`winap_simulated_active`, and `pricing_mode` (`published_tariffs` or
+`winap_simulation`). **SNAP active remains off during simulated winter nights**;
+it continues to describe the actual summer SNAP window only. The simulation
+markers remain in Recorder attributes so historical simulated prices can be
+identified. Turning the simulation off does not rewrite recorded history.
 
 ## Seven-day forecast on Total grid fees
 
@@ -135,7 +189,7 @@ data:
 
 This example uses a regular Burgenland household profile. All values are net
 **grid fees and levies**, not exchange energy prices. Forecasts use the selected
-profile's SNAP, EEG, and tax assumptions. They are calculated from the supported
+profile's SNAP, EEG, tax, and optional WiNAP simulation assumptions. They are calculated from the supported
 tariff schedule rather than estimated market prices.
 
 Additional attributes identify `forecast_start`, `forecast_end`, `forecast_hours`,
@@ -211,7 +265,7 @@ Any personal edits to the integration files will be replaced by the release.
 4. Open **Settings → Devices & services → Add integration** and search for
    **Gridfees AUT**.
 5. Select a grid area and supply type. For regular grid supply, confirm the
-   household load-profile rate and SNAP assumptions. EEG profiles finish directly
+   household load-profile rate, SNAP assumptions, and optional WiNAP simulation. EEG profiles finish directly
    after the grid area and supply type selection.
 6. Open the profile and verify Total grid fees and SNAP active. The five detail
    sensors are available as disabled entities and can be enabled individually.
@@ -227,6 +281,14 @@ The integration icon is packaged in `brand/icon.png`. Home Assistant 2026.3 or
 newer supports these local brand images. No extra image configuration is needed.
 
 ### Updating from an earlier version
+
+For **0.6.0**, install the HACS update and restart Home Assistant. Existing
+profiles, enabled entities, entity IDs, and saved household/SNAP choices are
+preserved. WiNAP simulation is initially off. To enable it for an existing
+regular grid profile, select **Reconfigure** in that entry's menu. No profile
+removal, manual file copying, or initial setup is required after an update.
+The project is marked Beta in the documentation; releases use normal GitHub
+release tags so HACS offers them without enabling prerelease downloads.
 
 Replace the integration files, including subfolders, and restart Home Assistant.
 Version 0.5.2 restores the `service` integration type so Gridfees AUT appears in
@@ -272,9 +334,12 @@ used for the dataset:
 - **Elektrizitätsabgabegesetz (ElAbgG)**, §§ 1, 2, 4, and 7, including
   Kleinwalsertal, EEG exemptions, and the 2026 household rate in § 7 Abs. 16.
 - **Erneuerbaren-Ausbau-Gesetz (EAG)**, § 75 Abs. 5.
+- **Systemnutzungsentgelte-Grundsatzverordnung (SNE-G-V)**, § 7 Abs. 4 and
+  § 32 Abs. 4, for the WiNAP simulation window and first legal application date.
 
 `custom_components/gridfees_aut/tariffs.json` contains the dated rates, EEG
-factors, and SNAP windows. Netznutzungsentgelt and Netzverlustentgelt are stored
+factors, and SNAP windows. The optional winter scenario uses those SNAP prices
+without adding a fictional rate to the legal tariff dataset. Netznutzungsentgelt and Netzverlustentgelt are stored
 in cents/kWh; Elektrizitätsabgabe and Erneuerbaren-Förderbeitrag components are
 stored in EUR/kWh. Decimal strings preserve published precision.
 
@@ -291,7 +356,7 @@ python -m unittest discover -s tests -v
 ```
 
 Tests cover the 84 region/period tariff records across all three supply types,
-explicit reference prices, tariff and tax boundaries, SNAP, EEG, rounding,
+explicit reference prices, tariff and tax boundaries, SNAP, WiNAP simulation, EEG, rounding,
 Kleinwalsertal, timezone conversion, unsupported years, invalid inputs, standard
 automatic EEG exemption, legacy profile normalization, and generated profile names.
 
@@ -302,7 +367,9 @@ future rates. The calculation engine additionally supports custom interval-start
 time series; a separate Home Assistant action for arbitrary ranges is not exposed.
 
 The calculation tests, HACS validation, and Home Assistant hassfest checks run
-on GitHub for pushes and pull requests. Version 0.5.2 was also checked in Home
+on GitHub for pushes and pull requests. Setup, reconfiguration and migration
+tests also run against Home Assistant 2026.3, the minimum supported version.
+Version 0.5.2 was also checked in Home
 Assistant: it appears in Add integration and opens the tariff setup dialog.
 
 References: [Config flow](https://developers.home-assistant.io/docs/core/integration/config_flow/),

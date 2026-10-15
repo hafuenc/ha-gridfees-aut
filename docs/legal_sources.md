@@ -29,6 +29,18 @@ Grid area labels follow the ordinance: Burgenland, Kärnten, Klagenfurt,
 Niederösterreich, Oberösterreich, Linz, Salzburg, Steiermark, Graz, Tirol,
 Innsbruck, Vorarlberg, Wien, and Kleinwalsertal.
 
+## Systemnutzungsentgelte-Grundsatzverordnung (SNE-G-V)
+
+- [SNE-G-V, BGBl. II Nr. 299/2026](https://ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2026_II_299/BGBLA_2026_II_299.html), issued 12 October 2026.
+- § 7 Abs. 4: Winter-Nieder-Arbeitspreis (WiNAP), for nights starting from
+  1 October to 31 March, from 23:00 until 05:00 the following day.
+- § 32 Abs. 4: WiNAP first applies to the period beginning 1 October 2027.
+
+The optional WiNAP simulation borrows the selected 2026 SNAP price only as an
+explicit fictional assumption. The SNE-G-V defines the winter time window and
+first application date; it does **not** prescribe using the SNAP price as WiNAP.
+The supported tariff dataset is not extended into 2027 by this simulation.
+
 ## Erneuerbaren-Förderbeitrag
 
 - [Erneuerbaren-Förderbeitragsverordnung 2025, BGBl. II Nr. 419/2024](https://www.ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2024_II_419/BGBLA_2024_II_419.html).
@@ -82,5 +94,6 @@ The sensors represent variable net prices per kWh. They do not represent a
 complete electricity bill. Fixed Grund-/Leistungspreise, Entgelte für
 Messleistungen, Erneuerbaren-Förderpauschale, local levies, biomass subsidies,
 the energy purchase price, VAT, and foreign taxes or levies are not included.
-Hypothetical winter tariff reductions are not applied. Dates outside the
+Hypothetical winter tariff reductions are applied only when the user explicitly
+enables WiNAP simulation for regular grid supply; they are marked as simulated. Dates outside the
 supported dataset do not receive extrapolated prices.

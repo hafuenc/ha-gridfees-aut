@@ -15,14 +15,14 @@ GridfeesConfigEntry = ConfigEntry[GridfeesCoordinator]
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: GridfeesConfigEntry) -> bool:
-    """Remove retired EEG tax settings without changing profile or entity IDs."""
+    """Normalize assumptions and default simulations off, preserving identities."""
     if entry.version != 1:
         return False
-    if entry.minor_version < 2:
+    if entry.minor_version < 3:
         hass.config_entries.async_update_entry(
             entry,
             data=TariffProfile.from_config(entry.data).as_config(),
-            minor_version=2,
+            minor_version=3,
         )
     return True
 

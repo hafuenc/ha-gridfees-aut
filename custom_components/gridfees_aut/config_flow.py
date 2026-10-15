@@ -13,6 +13,7 @@ from .const import (
     CONF_HOUSEHOLD,
     CONF_REGION,
     CONF_SNAP_ELIGIBLE,
+    CONF_SIMULATE_WINAP,
     CONF_SUPPLY_TYPE,
     DOMAIN,
     REGIONS,
@@ -26,7 +27,7 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Collect grid area, supply type and applicable tax assumptions."""
 
     VERSION = 1
-    MINOR_VERSION = 2
+    MINOR_VERSION = 3
 
     def __init__(self) -> None:
         """Initialize the pending tariff profile."""
@@ -73,12 +74,11 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             return self._create_profile(user_input)
 
-        fields: dict[Any, Any] = {
-            vol.Required(CONF_HOUSEHOLD, default=True): selector.BooleanSelector(),
+        defaults = TariffProfile.from_config(self._profile).as_config()
+        fields = {
+            vol.Required(key, default=defaults[key]): selector.BooleanSelector()
+            for key in (CONF_HOUSEHOLD, CONF_SNAP_ELIGIBLE, CONF_SIMULATE_WINAP)
         }
-        fields[vol.Required(CONF_SNAP_ELIGIBLE, default=True)] = (
-            selector.BooleanSelector()
-        )
 
         return self.async_show_form(
             step_id="tariff",
@@ -86,17 +86,39 @@ class GridfeesAutConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "elabgg_url": "https://ris.bka.gv.at/eli/bgbl/1996/201/P7/NOR40273847",
                 "stromkostenzuschuss_url": "https://www.ris.bka.gv.at/eli/bgbl/i/2022/156/P4/NOR40250760",
+                "sne_v_url": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=20010107",
+                "sne_g_v_url": "https://ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2026_II_299/BGBLA_2026_II_299.html",
             },
         )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Change assumptions without replacing the existing profile or entities."""
+        self._profile = dict(self._get_reconfigure_entry().data)
+        if self._profile[CONF_SUPPLY_TYPE] != SUPPLY_GRID:
+            return self.async_abort(reason="no_tariff_assumptions")
+        return await self.async_step_tariff(user_input)
 
     def _create_profile(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Create a normalized profile and reject equivalent legacy profiles."""
         profile = TariffProfile.from_config({**self._profile, **(user_input or {})})
+        current = (
+            self._get_reconfigure_entry()
+            if self.source == config_entries.SOURCE_RECONFIGURE
+            else None
+        )
         if any(
-            TariffProfile.from_config(entry.data) == profile
+            entry is not current and TariffProfile.from_config(entry.data) == profile
             for entry in self._async_current_entries()
         ):
             return self.async_abort(reason="already_configured")
+        if current is not None:
+            return self.async_update_reload_and_abort(
+                current,
+                data_updates=profile.as_config(),
+                reason="reconfigure_successful",
+            )
         return self.async_create_entry(
             title=profile_title(profile.region, profile.supply_type),
             data=profile.as_config(),

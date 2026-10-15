@@ -17,3 +17,15 @@ jobs:
           python-version: "3.13"
       - name: Run tariff regression and calendar tests
         run: python -m unittest discover -s tests -v
+
+  config-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install the minimum supported Home Assistant runtime
+        run: pip install homeassistant==2026.3.0
+      - name: Test setup, reconfiguration and migration
+        run: python -m unittest discover -s ha_tests -v

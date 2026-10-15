@@ -12,19 +12,23 @@
       },
       "tariff": {
         "title": "Tariff assumptions",
-        "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT.",
+        "description": "Confirm the conditions applicable to your supply. Prices are expressed in EUR/kWh excluding VAT. All time windows use Europe/Vienna.",
         "data": {
-          "household": "Elektrizitätsabgabe für Zählpunkte mit Haushaltslastprofil",
-          "snap_eligible": "Eligible for SNAP"
+          "household": "Reduced Elektrizitätsabgabe for household load profiles",
+          "snap_eligible": "Eligible for SNAP (Sommer-Nieder-Arbeitspreis)",
+          "simulate_winap": "Simulate WiNAP (Winter-Nieder-Arbeitspreis)"
         },
         "data_description": {
-          "household": "Der Entnahmezählpunkt hat eines der begünstigten Lastprofile H0, HA oder HF. Für 2026 verweist [§ 7 Abs. 16 ElAbgG]({elabgg_url}) auf den berechtigten Personenkreis nach [§ 4 Abs. 1 Stromkostenzuschussgesetz]({stromkostenzuschuss_url}). Ein: ermäßigter Satz; aus: Satz für sonstige Lieferungen.",
-          "snap_eligible": "Electronically measured quarter-hourly quantities are read by the grid operator."
+          "household": "The Entnahmezählpunkt has one of the eligible household load profiles H0, HA or HF. For electricity supplied to a natural person, this qualifies for the reduced Elektrizitätsabgabe in 2026. See [§ 7 Abs. 16 ElAbgG]({elabgg_url}) and [§ 4 Abs. 1 Stromkostenzuschussgesetz]({stromkostenzuschuss_url}).",
+          "snap_eligible": "Quarter-hourly consumption is electronically measured and read by the grid operator. SNAP applies on Netzebene 7, from 1 April to 30 September, daily from 10:00 to 16:00, to quantities not allocated to an Erneuerbare-Energie-Gemeinschaft. See [§ 2 Abs. 1 Z 9 und § 5 Abs. 1b SNE-V 2018]({sne_v_url}).",
+          "simulate_winap": "WiNAP first applies from 1 October 2027. Enable this option to simulate a reduction of Netznutzungsentgelt using the selected tariff’s SNAP reduction from 1 October to 31 March, daily from 23:00 to 05:00 the following day. This is a simulation assumption; it does not represent the future published WiNAP price. See [§ 7 Abs. 4 und § 32 Abs. 4 SNE-G-V]({sne_g_v_url})."
         }
       }
     },
     "abort": {
-      "already_configured": "A tariff profile with these settings is already configured."
+      "already_configured": "A tariff profile with these settings is already configured.",
+      "reconfigure_successful": "The tariff assumptions have been updated.",
+      "no_tariff_assumptions": "EEG profiles apply their reductions and exemptions automatically. No tariff assumptions need to be configured."
     }
   },
   "selector": {

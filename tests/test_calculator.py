@@ -163,6 +163,7 @@ class CalculatorTests(unittest.TestCase):
                         "supply_type": supply,
                         "household": True,
                         "snap_eligible": False,
+                        "simulate_winap": False,
                     })
                     snapshot = self.calculator.snapshot(local("2026-06-01T12:00"), profile)
                     self.assertEqual(snapshot.current.electricity_tax, 0)

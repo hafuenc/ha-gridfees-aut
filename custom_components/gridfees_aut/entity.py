@@ -27,6 +27,7 @@ class GridfeesEntity(CoordinatorEntity[GridfeesCoordinator]):
             "grid_area": coordinator.profile.region,
             "supply_type": coordinator.profile.supply_type,
             "vat_included": False,
+            "winap_simulation_enabled": coordinator.profile.simulate_winap,
             "tariff_valid_from": coordinator.calculator.valid_from.isoformat(),
             "tariff_valid_until": coordinator.calculator.valid_until.isoformat(),
         }
