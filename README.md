@@ -19,7 +19,7 @@
 Home Assistant integration for Austrian variable grid fees and levies,
 expressed in EUR/kWh excluding VAT.
 
-## Status: 0.6.0 (Beta)
+## Status: 0.6.1 (Beta)
 
 Configure a grid area and supply type. Regular grid supply profiles additionally
 ask for the household load-profile rate, SNAP eligibility, and optional WiNAP
